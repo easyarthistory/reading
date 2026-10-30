@@ -70,16 +70,16 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between bg-washi text-wood-800">
+<body class="h-[100dvh] flex flex-col justify-between bg-washi text-wood-800 overflow-hidden">
 
     <!-- 頂部導覽列：日系極簡風格 -->
-    <header class="w-full muji-card sticky top-0 z-30 px-3 sm:px-5 py-3 border-b border-stoneborder flex justify-between items-center">
+    <header class="w-full muji-card shrink-0 px-3 sm:px-5 py-2.5 border-b border-stoneborder flex justify-between items-center z-30">
         <div class="flex items-center gap-2 sm:gap-3">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-wood-700 text-washi flex items-center justify-center shadow-sm shrink-0">
-                <i class="fa-solid fa-eye text-sm sm:text-base"></i>
+            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-wood-700 text-washi flex items-center justify-center shadow-sm shrink-0">
+                <i class="fa-solid fa-eye text-xs sm:text-base"></i>
             </div>
             <div>
-                <h1 class="text-sm sm:text-base md:text-lg font-bold text-wood-800 flex items-center gap-1.5 sm:gap-2">
+                <h1 class="text-xs sm:text-base md:text-lg font-bold text-wood-800 flex items-center gap-1.5 sm:gap-2">
                     SpLD 視覺模擬器
                     <span class="text-[10px] sm:text-xs bg-matcha-100 text-matcha-700 font-medium px-2 py-0.5 rounded-full border border-matcha-500/20 hidden min-[380px]:inline-block">親師體驗</span>
                 </h1>
@@ -89,52 +89,56 @@
 
         <!-- 頂部按鈕 -->
         <div class="flex items-center gap-1.5 sm:gap-2">
-            <button id="toggle-info-btn" class="bg-washi hover:bg-washidark text-wood-700 text-xs px-2.5 sm:px-3.5 py-2 rounded-xl border border-stoneborder transition flex items-center gap-1.5 shadow-sm active:scale-95">
+            <button id="toggle-info-btn" class="bg-washi hover:bg-washidark text-wood-700 text-xs px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-stoneborder transition flex items-center gap-1.5 shadow-sm active:scale-95">
                 <i class="fa-solid fa-book-open text-matcha-700"></i>
                 <span class="hidden sm:inline">SpLD 解說</span>
             </button>
-            <button id="switch-cam-btn" class="bg-washi hover:bg-washidark text-wood-700 text-xs px-2.5 sm:px-3.5 py-2 rounded-xl border border-stoneborder transition flex items-center gap-1.5 shadow-sm active:scale-95">
+            <button id="stop-cam-btn" class="bg-washi hover:bg-washidark text-rose-700 text-xs px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-stoneborder transition flex items-center gap-1.5 shadow-sm active:scale-95 hidden">
+                <i class="fa-solid fa-camera-retro"></i>
+                <span class="hidden sm:inline">關閉相機</span>
+            </button>
+            <button id="switch-cam-btn" class="bg-washi hover:bg-washidark text-wood-700 text-xs px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-stoneborder transition flex items-center gap-1.5 shadow-sm active:scale-95">
                 <i class="fa-solid fa-camera-rotate"></i>
                 <span class="hidden sm:inline">切換鏡頭</span>
             </button>
         </div>
     </header>
 
-    <!-- 主展示畫面區 -->
-    <main class="flex-1 relative flex items-center justify-center bg-washidark overflow-hidden min-h-[350px] p-2 sm:p-4">
+    <!-- 主展示畫面區：滿版自動伸展 -->
+    <main class="flex-1 relative flex flex-col items-center justify-center bg-washidark overflow-hidden p-1.5 sm:p-4 w-full h-full">
         
-        <!-- 視訊與 Canvas 容器 (加圓角日系框) -->
-        <div id="canvas-container" class="w-full h-full max-w-5xl rounded-2xl sm:rounded-3xl overflow-hidden border border-stoneborder shadow-md relative bg-washi flex items-center justify-center">
+        <!-- 視訊與 Canvas 容器 (自動填滿空間) -->
+        <div id="canvas-container" class="w-full h-full rounded-2xl sm:rounded-3xl overflow-hidden border border-stoneborder shadow-sm relative bg-washi flex items-center justify-center">
             <!-- 實時視訊 (隱藏) -->
             <video id="webcam" autoplay playsinline muted class="hidden"></video>
             
             <!-- SpLD 渲染 Canvas -->
-            <canvas id="spld-canvas" class="w-full h-full object-cover"></canvas>
+            <canvas id="spld-canvas" class="w-full h-full block object-cover"></canvas>
 
             <!-- 啟動相機遮罩 -->
             <div id="start-overlay" class="absolute inset-0 bg-washi/95 z-20 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
-                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-wood-100 border border-stoneborder flex items-center justify-center text-wood-700 text-2xl sm:text-3xl mb-4 shadow-sm">
+                <div class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-wood-100 border border-stoneborder flex items-center justify-center text-wood-700 text-xl sm:text-3xl mb-3 sm:mb-4 shadow-sm">
                     <i class="fa-solid fa-camera text-wood-700"></i>
                 </div>
-                <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-wood-800 mb-2">開啟實時相機體驗</h2>
-                <p class="text-wood-500 text-xs sm:text-sm max-w-md mb-5 sm:mb-6 leading-relaxed">
+                <h2 class="text-base sm:text-xl md:text-2xl font-bold text-wood-800 mb-1.5 sm:mb-2">開啟實時相機體驗</h2>
+                <p class="text-wood-500 text-xs sm:text-sm max-w-md mb-4 sm:mb-6 leading-relaxed">
                     將相機對準課本或字卡。網頁將實時模擬特定學習困難學童看到的<span class="text-wood-700 font-bold">缺筆劃</span>、<span class="text-matcha-700 font-bold">字體浮動跳動</span>與<span class="text-wood-800 font-bold">偏旁錯位</span>視覺體驗。
                 </p>
-                <button id="start-cam-btn" class="bg-wood-700 hover:bg-wood-800 text-washi font-medium py-3 px-7 sm:px-8 rounded-2xl shadow-sm transition transform hover:scale-105 active:scale-95 flex items-center gap-2 text-xs sm:text-sm">
+                <button id="start-cam-btn" class="bg-wood-700 hover:bg-wood-800 text-washi font-medium py-2.5 sm:py-3 px-6 sm:px-8 rounded-2xl shadow-sm transition transform hover:scale-105 active:scale-95 flex items-center gap-2 text-xs sm:text-sm">
                     <i class="fa-solid fa-circle-play"></i> 啟動相機模擬
                 </button>
             </div>
 
             <!-- 狀態提示 -->
-            <div id="status-badge" class="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 muji-card px-3 py-1.5 rounded-full border border-stoneborder flex items-center gap-2 text-[11px] sm:text-xs hidden shadow-sm">
+            <div id="status-badge" class="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-10 muji-card px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border border-stoneborder flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs hidden shadow-sm">
                 <span id="status-dot" class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-matcha-500 animate-pulse"></span>
                 <span id="status-text" class="text-wood-700 font-medium">相機運行中</span>
             </div>
         </div>
 
         <!-- 底部互動控制面板 -->
-        <div class="absolute bottom-3 sm:bottom-6 left-2 right-2 sm:left-4 sm:right-4 z-20 max-w-4xl mx-auto">
-            <div id="controls-panel" class="muji-card rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-stoneborder transition-all duration-300">
+        <div class="absolute bottom-2 sm:bottom-4 left-1.5 right-1.5 sm:left-4 sm:right-4 z-20 max-w-4xl mx-auto">
+            <div id="controls-panel" class="muji-card rounded-xl sm:rounded-3xl p-2.5 sm:p-5 border border-stoneborder transition-all duration-300">
                 
                 <!-- 頁籤與選單折疊 -->
                 <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-stoneborder">
@@ -319,6 +323,7 @@
         const valSwap = document.getElementById('val-swap');
         const valCrowding = document.getElementById('val-crowding');
         
+        const stopCamBtn = document.getElementById('stop-cam-btn');
         const switchCamBtn = document.getElementById('switch-cam-btn');
         const toggleInfoBtn = document.getElementById('toggle-info-btn');
         const infoModal = document.getElementById('info-modal');
@@ -369,6 +374,7 @@
                     video.play();
                     startOverlay.classList.add('hidden');
                     statusBadge.classList.remove('hidden');
+                    stopCamBtn.classList.remove('hidden');
                     statusText.innerText = '相機運行中';
                     resizeCanvas();
                     if (!animationFrameId) renderLoop();
@@ -378,6 +384,24 @@
                 alert('無法讀取相機。請確認已授予相機存取權限。');
                 console.error(err);
             }
+        }
+
+        // 關閉攝影機
+        function stopCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            video.pause();
+            video.srcObject = null;
+            
+            // 重設 UI 狀態
+            stopCamBtn.classList.add('hidden');
+            statusBadge.classList.add('hidden');
+            startOverlay.classList.remove('hidden');
+
+            // 清空畫布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
 
         function resizeCanvas() {
@@ -793,6 +817,8 @@
         };
 
         // 相機切換與模態框 controls
+        stopCamBtn.onclick = stopCamera;
+
         switchCamBtn.onclick = () => {
             facingMode = facingMode === 'environment' ? 'user' : 'environment';
             startCamera();
