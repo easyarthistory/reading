@@ -83,7 +83,7 @@
                     SpLD 視覺模擬器
                     <span class="text-[10px] sm:text-xs bg-matcha-100 text-matcha-700 font-medium px-2 py-0.5 rounded-full border border-matcha-500/20 hidden min-[380px]:inline-block">親師體驗</span>
                 </h1>
-                <p class="text-[11px] sm:text-xs text-wood-500 hidden md:block">體驗學習困難孩子眼中的文字世界</p>
+                <p class="text-[11px] sm:text-xs text-wood-500 hidden md:block">用相機溫和體會學習困難孩子眼中的文字世界</p>
             </div>
         </div>
 
@@ -678,33 +678,27 @@
             });
         }
 
-        // 自訂輸入文字渲染
+        // 自訂輸入文字渲染 (排版設定與經典範文完全一致)
         function renderCustomTextOverlay(time, missing, jitter, swap, crowding) {
-            const rawText = customTextInput.value || "國文預習第一課";
-            const fontSize = Math.max(22, canvas.height * 0.048);
-            const startX = canvas.width * 0.12;
-            let startY = canvas.height * 0.32;
-
-            ctx.fillStyle = 'rgba(251, 249, 245, 0.88)';
-            ctx.beginPath();
-            ctx.roundRect(startX - 24, startY - fontSize - 20, canvas.width * 0.76, fontSize * 4.5, 20);
-            ctx.fill();
-            ctx.strokeStyle = '#E6E1DA';
-            ctx.stroke();
-
-            const chars = rawText.split('');
-            let curX = startX;
-            let curY = startY;
-
-            chars.forEach((char, idx) => {
-                if (curX > canvas.width * 0.8) {
-                    curX = startX;
-                    curY += fontSize * (1.5 - crowding * 0.45);
+            const rawInput = customTextInput.value || "國文預習第一課：床前明月光，疑是地上霜。";
+            
+            // 轉換格式以複用經典範文的渲染邏輯 (保持完全相同的卡片邊距、標題居中、內文縮排與行距)
+            let formattedText = rawInput;
+            
+            // 簡單判斷是否包含英文為主
+            const isEnglish = /^[A-Za-z0-9\s,.:;!?'"-]+$/.test(rawInput.trim());
+            
+            if (isEnglish) {
+                if (!rawInput.startsWith("English Story:")) {
+                    formattedText = `English Story: Custom Text: ${rawInput}`;
                 }
+            } else if (!rawInput.includes("：") && !rawInput.includes("【")) {
+                // 如果沒有指定標題，自動將前幾個字作為標題
+                const defaultTitle = "自訂學習課文";
+                formattedText = `【自訂】${defaultTitle}：${rawInput}`;
+            }
 
-                drawSpldCharacter(char, curX, curY, fontSize, time + idx, missing, jitter, swap, crowding);
-                curX += fontSize * (1.0 - crowding * 0.2);
-            });
+            renderArticleOverlay(formattedText, time, missing, jitter, swap, crowding);
         }
 
         // 單個字符渲染 (包含缺筆劃/震盪/錯位特效)
@@ -833,7 +827,15 @@
 
         toggleInfoBtn.onclick = () => infoModal.classList.remove('hidden');
         closeModalBtn.onclick = () => infoModal.classList.add('hidden');
-        startCamBtn.onclick = startCamera;
+        
+        // 相機啟動觸控與點擊雙重事件處理
+        const handleStartCamera = (e) => {
+            if (e) e.preventDefault();
+            startCamera();
+        };
+
+        startCamBtn.addEventListener('click', handleStartCamera);
+        startCamBtn.addEventListener('touchstart', handleStartCamera, { passive: false });
     </script>
 </body>
 </html>
