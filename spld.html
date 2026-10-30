@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpLD 讀寫障礙視覺模擬器 - 體驗孩子眼中的文字</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 圖標 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tesseract.js (用於實時文字識別) -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        washi: '#FBF9F5',
+                        washidark: '#F4EFE6',
+                        wood: {
+                            100: '#EFEAE4',
+                            500: '#A38F7D',
+                            700: '#8C7462',
+                            800: '#6E5A4B',
+                        },
+                        matcha: {
+                            100: '#EAF0EB',
+                            500: '#7A8B7B',
+                            700: '#5A6B5B',
+                        },
+                        stoneborder: '#E6E1DA'
+                    },
+                    fontFamily: {
+                        sans: ['"Noto Sans TC"', '"Zen Maru Gothic"', 'sans-serif'],
+                        serif: ['"Noto Serif TC"', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700;900&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Zen Maru Gothic', 'Noto Sans TC', sans-serif;
+            background-color: #FBF9F5;
+            color: #4A4036;
+        }
+
+        /* 溫和日系質感的毛玻璃卡片 */
+        .muji-card {
+            background: rgba(251, 249, 245, 0.92);
+            backdrop-filter: blur(10px);
+            border: 1px solid #E6E1DA;
+            box-shadow: 0 4px 20px -2px rgba(140, 116, 98, 0.08);
+        }
+
+        /* 溫和日系自訂滑桿 */
+        input[type=range] {
+            accent-color: #8C7462;
+        }
+
+        /* 隱藏滾動條但保持功能 */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-washi text-wood-800">
+
+    <!-- 頂部導覽列：日系極簡風格 -->
+    <header class="w-full muji-card sticky top-0 z-30 px-5 py-3.5 border-b border-stoneborder flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-2xl bg-wood-700 text-washi flex items-center justify-center shadow-sm">
+                <i class="fa-solid fa-eye text-base"></i>
+            </div>
+            <div>
+                <h1 class="text-base md:text-lg font-bold text-wood-800 flex items-center gap-2">
+                    SpLD 讀寫障礙視覺模擬器
+                    <span class="text-xs bg-matcha-100 text-matcha-700 font-medium px-2.5 py-0.5 rounded-full border border-matcha-500/20">親師同行版</span>
+                </h1>
+                <p class="text-xs text-wood-500 hidden sm:block">用相機溫和體會學習困難孩子眼中的文字世界</p>
+            </div>
+        </div>
+
+        <!-- 頂部按鈕 -->
+        <div class="flex items-center gap-2">
+            <button id="toggle-info-btn" class="bg-washi hover:bg-washidark text-wood-700 text-xs px-3.5 py-2 rounded-xl border border-stoneborder transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-book-open text-matcha-700"></i>
+                <span class="hidden md:inline">SpLD 教育手冊</span>
+            </button>
+            <button id="switch-cam-btn" class="bg-washi hover:bg-washidark text-wood-700 text-xs px-3.5 py-2 rounded-xl border border-stoneborder transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-camera-rotate"></i>
+                <span class="hidden md:inline">切換鏡頭</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- 主展示畫面區 -->
+    <main class="flex-1 relative flex items-center justify-center bg-washidark overflow-hidden min-h-[420px] p-2 sm:p-4">
+        
+        <!-- 視訊與 Canvas 容器 (加圓角日系框) -->
+        <div class="w-full h-full max-w-5xl rounded-3xl overflow-hidden border border-stoneborder shadow-md relative bg-washi flex items-center justify-center">
+            <!-- 實時視訊 (隱藏) -->
+            <video id="webcam" autoplay playsinline class="hidden"></video>
+            
+            <!-- SpLD 渲染 Canvas -->
+            <canvas id="spld-canvas" class="w-full h-full object-cover"></canvas>
+
+            <!-- 啟動相機遮罩 -->
+            <div id="start-overlay" class="absolute inset-0 bg-washi/95 z-20 flex flex-col items-center justify-center p-6 text-center">
+                <div class="w-20 h-20 rounded-3xl bg-wood-100 border border-stoneborder flex items-center justify-center text-wood-700 text-3xl mb-5 shadow-sm">
+                    <i class="fa-solid fa-camera text-wood-700"></i>
+                </div>
+                <h2 class="text-xl md:text-2xl font-bold text-wood-800 mb-2">開啟實時相機體驗</h2>
+                <p class="text-wood-500 text-xs md:text-sm max-w-md mb-6 leading-relaxed">
+                    將相機對準課本或字卡。網頁將實時模擬特定學習困難學童看到的<span class="text-wood-700 font-bold">缺筆劃</span>、<span class="text-matcha-700 font-bold">字體浮動跳動</span>與<span class="text-wood-800 font-bold">偏旁錯位</span>視覺體驗。
+                </p>
+                <button id="start-cam-btn" class="bg-wood-700 hover:bg-wood-800 text-washi font-medium py-3 px-8 rounded-2xl shadow-sm transition transform hover:scale-105 active:scale-95 flex items-center gap-2 text-sm">
+                    <i class="fa-solid fa-circle-play"></i> 啟動相機模擬
+                </button>
+            </div>
+
+            <!-- 狀態提示 -->
+            <div id="status-badge" class="absolute top-4 left-4 z-10 muji-card px-3.5 py-1.5 rounded-full border border-stoneborder flex items-center gap-2 text-xs hidden shadow-sm">
+                <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-matcha-500 animate-pulse"></span>
+                <span id="status-text" class="text-wood-700 font-medium">相機運行中</span>
+            </div>
+        </div>
+
+        <!-- 底部互動控制面板 -->
+        <div class="absolute bottom-6 left-4 right-4 z-20 max-w-4xl mx-auto">
+            <div id="controls-panel" class="muji-card rounded-3xl p-4 sm:p-5 border border-stoneborder transition-all duration-300">
+                
+                <!-- 頁籤與選單折疊 -->
+                <div class="flex items-center justify-between pb-3 mb-3 border-b border-stoneborder">
+                    <div class="flex gap-2 text-xs font-bold">
+                        <button id="tab-mode-ocr" class="px-3.5 py-1.5 rounded-xl bg-wood-700 text-washi transition shadow-sm">
+                            <i class="fa-solid fa-expand mr-1"></i>實時相機掃描
+                        </button>
+                        <button id="tab-mode-text" class="px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark">
+                            <i class="fa-solid fa-pen-nib mr-1"></i>範例課文疊加
+                        </button>
+                    </div>
+                    <button id="collapse-btn" class="text-wood-500 hover:text-wood-800 text-xs px-2 py-1">
+                        <i class="fa-solid fa-chevron-down"></i> 收折選單
+                    </button>
+                </div>
+
+                <!-- 自訂教材輸入欄 (Tab 2) -->
+                <div id="custom-text-input-container" class="hidden mb-3">
+                    <label class="block text-xs font-medium text-wood-700 mb-1.5">自訂模擬課文 / 句子：</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="custom-text-input" value="國文預習第一課：床前明月光，疑是地上霜。" 
+                            class="flex-1 bg-washi border border-stoneborder rounded-xl px-3.5 py-2 text-xs text-wood-800 focus:outline-none focus:border-wood-500">
+                        <button id="preset-btn-1" class="bg-washidark hover:bg-wood-100 text-wood-700 text-xs px-3 py-1.5 rounded-xl border border-stoneborder">國文範例</button>
+                        <button id="preset-btn-2" class="bg-washidark hover:bg-wood-100 text-wood-700 text-xs px-3 py-1.5 rounded-xl border border-stoneborder">English</button>
+                    </div>
+                </div>
+
+                <!-- SpLD 視覺強度控制滑桿 -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                    
+                    <!-- 1. 缺筆劃 -->
+                    <div class="bg-washi p-3 rounded-2xl border border-stoneborder">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="font-bold text-wood-800 flex items-center gap-1">
+                                <i class="fa-solid fa-eraser text-wood-500"></i> 筆劃缺失
+                            </label>
+                            <span id="val-missing" class="text-wood-500 font-mono">60%</span>
+                        </div>
+                        <input type="range" id="param-missing" min="0" max="100" value="60" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- 2. 字體跳動 -->
+                    <div class="bg-washi p-3 rounded-2xl border border-stoneborder">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="font-bold text-wood-800 flex items-center gap-1">
+                                <i class="fa-solid fa-water text-matcha-500"></i> 字體漂浮
+                            </label>
+                            <span id="val-jitter" class="text-wood-500 font-mono">70%</span>
+                        </div>
+                        <input type="range" id="param-jitter" min="0" max="100" value="70" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- 3. 部首鏡像/錯位 -->
+                    <div class="bg-washi p-3 rounded-2xl border border-stoneborder">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="font-bold text-wood-800 flex items-center gap-1">
+                                <i class="fa-solid fa-arrows-rotate text-wood-500"></i> 部首錯位
+                            </label>
+                            <span id="val-swap" class="text-wood-500 font-mono">40%</span>
+                        </div>
+                        <input type="range" id="param-swap" min="0" max="100" value="40" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                    <!-- 4. 行距壓迫 -->
+                    <div class="bg-washi p-3 rounded-2xl border border-stoneborder">
+                        <div class="flex justify-between items-center mb-1.5">
+                            <label class="font-bold text-wood-800 flex items-center gap-1">
+                                <i class="fa-solid fa-compress text-matcha-500"></i> 視覺擁擠
+                            </label>
+                            <span id="val-crowding" class="text-wood-500 font-mono">45%</span>
+                        </div>
+                        <input type="range" id="param-crowding" min="0" max="100" value="45" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- SpLD 家長與教師教育說明 Modal (日系卡片版面) -->
+    <div id="info-modal" class="fixed inset-0 bg-wood-800/30 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="muji-card max-w-xl w-full rounded-3xl p-6 md:p-8 border border-stoneborder shadow-xl relative max-h-[85vh] overflow-y-auto no-scrollbar">
+            <button id="close-modal-btn" class="absolute top-5 right-5 text-wood-500 hover:text-wood-800 text-lg w-8 h-8 rounded-full bg-washidark flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            
+            <div class="flex items-center gap-2.5 mb-4">
+                <div class="w-8 h-8 rounded-xl bg-matcha-100 text-matcha-700 flex items-center justify-center">
+                    <i class="fa-solid fa-heart text-sm"></i>
+                </div>
+                <h3 class="text-lg font-bold text-wood-800">SpLD 讀寫障礙陪伴解說</h3>
+            </div>
+
+            <div class="space-y-3.5 text-xs md:text-sm text-wood-700 leading-relaxed">
+                <div class="bg-washi p-4 rounded-2xl border border-stoneborder">
+                    <h4 class="font-bold text-wood-800 mb-1 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-wood-500"></span> 1. 筆劃缺失（Missing Strokes）
+                    </h4>
+                    <p class="text-wood-500 text-xs">讀寫障礙學童大腦在視覺解析漢字時，對複雜筆劃的空間感較薄弱，容易在視覺上漏掉橫、點、豎，導致閱讀或抄寫時漏筆劃。</p>
+                </div>
+
+                <div class="bg-washi p-4 rounded-2xl border border-stoneborder">
+                    <h4 class="font-bold text-wood-800 mb-1 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-matcha-500"></span> 2. 字體漂浮跳動（Visual Stress）
+                    </h4>
+                    <p class="text-wood-500 text-xs">大腦無視覺抑制機制時，白紙上的印刷黑字容易出現扭曲、旋轉或浮動感，導致學童閱讀速度慢且易視覺疲勞。</p>
+                </div>
+
+                <div class="bg-washi p-4 rounded-2xl border border-stoneborder">
+                    <h4 class="font-bold text-wood-800 mb-1 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-wood-700"></span> 3. 部首錯位與字母顛倒
+                    </h4>
+                    <p class="text-wood-500 text-xs">學童的空間定位功能尚在發展，容易將漢字左右偏旁（如「陪」與「部」）倒置，或把英文 `b` 認成 `d`。</p>
+                </div>
+
+                <div class="p-4 bg-matcha-100 border border-matcha-500/20 rounded-2xl text-matcha-700 text-xs">
+                    <i class="fa-solid fa-seedling mr-1"></i> <strong>陪伴小貼士：</strong> 使用較大的字體、加大行距，或搭配暖黃色/淺綠色閱讀遮罩，能有效減緩孩子閱讀時的視覺壓力。
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 邏輯 (維持完整 SpLD 圖像運算與相機功能) -->
+    <script>
+        // DOM 引用
+        const video = document.getElementById('webcam');
+        const canvas = document.getElementById('spld-canvas');
+        const ctx = canvas.getContext('2d');
+        const startOverlay = document.getElementById('start-overlay');
+        const startCamBtn = document.getElementById('start-cam-btn');
+        const switchCamBtn = document.getElementById('switch-cam-btn');
+        const statusBadge = document.getElementById('status-badge');
+        const statusText = document.getElementById('status-text');
+
+        // 控制面板 DOM
+        const tabModeOcr = document.getElementById('tab-mode-ocr');
+        const tabModeText = document.getElementById('tab-mode-text');
+        const customTextInputContainer = document.getElementById('custom-text-input-container');
+        const customTextInput = document.getElementById('custom-text-input');
+        const presetBtn1 = document.getElementById('preset-btn-1');
+        const presetBtn2 = document.getElementById('preset-btn-2');
+        const collapseBtn = document.getElementById('collapse-btn');
+        const controlsPanel = document.getElementById('controls-panel');
+
+        // 滑桿 DOM
+        const paramMissing = document.getElementById('param-missing');
+        const paramJitter = document.getElementById('param-jitter');
+        const paramSwap = document.getElementById('param-swap');
+        const paramCrowding = document.getElementById('param-crowding');
+
+        const valMissing = document.getElementById('val-missing');
+        const valJitter = document.getElementById('val-jitter');
+        const valSwap = document.getElementById('val-swap');
+        const valCrowding = document.getElementById('val-crowding');
+
+        // Modal
+        const infoModal = document.getElementById('info-modal');
+        const toggleInfoBtn = document.getElementById('toggle-info-btn');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        // 全局狀態
+        let currentStream = null;
+        let facingMode = 'environment';
+        let currentMode = 'ocr';
+        let worker = null;
+        let ocrResults = [];
+        let isOcrProcessing = false;
+        let ocrInterval = null;
+        let animationFrameId = null;
+
+        // 滑桿變更
+        paramMissing.oninput = (e) => valMissing.innerText = e.target.value + '%';
+        paramJitter.oninput = (e) => valJitter.innerText = e.target.value + '%';
+        paramSwap.oninput = (e) => valSwap.innerText = e.target.value + '%';
+        paramCrowding.oninput = (e) => valCrowding.innerText = e.target.value + '%';
+
+        // 初始化 OCR
+        async function initOCR() {
+            try {
+                worker = await Tesseract.createWorker('chi_tra+eng');
+            } catch (err) {
+                console.warn('OCR 初始化備用模式', err);
+            }
+        }
+        initOCR();
+
+        // 啟動相機
+        async function startCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+
+            try {
+                const constraints = {
+                    video: {
+                        facingMode: facingMode,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = currentStream;
+                await video.play();
+
+                startOverlay.classList.add('hidden');
+                statusBadge.classList.remove('hidden');
+
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+
+                if (!animationFrameId) renderLoop();
+                if (ocrInterval) clearInterval(ocrInterval);
+                ocrInterval = setInterval(processOCR, 2000);
+
+            } catch (err) {
+                alert('無法存取攝影機，請檢查瀏覽器相機權限設定。');
+                console.error(err);
+            }
+        }
+
+        function resizeCanvas() {
+            if (video.videoWidth) {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+            } else {
+                canvas.width = canvas.clientWidth;
+                canvas.height = canvas.clientHeight;
+            }
+        }
+
+        // 背景 OCR 文字檢測
+        async function processOCR() {
+            if (currentMode !== 'ocr' || isOcrProcessing || !video.srcObject || video.paused) return;
+
+            isOcrProcessing = true;
+            statusText.innerText = '正在偵測文字...';
+
+            try {
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = canvas.width;
+                tempCanvas.height = canvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+
+                if (!worker) worker = await Tesseract.createWorker('chi_tra+eng');
+
+                const { data } = await worker.recognize(tempCanvas);
+                if (data && data.words) {
+                    ocrResults = data.words.filter(w => w.text.trim().length > 0 && w.confidence > 45);
+                }
+            } catch (e) {
+                console.error(e);
+            } finally {
+                isOcrProcessing = false;
+                statusText.innerText = `已掃描 ${ocrResults.length} 個字詞區塊`;
+            }
+        }
+
+        // 渲染循環 (60 FPS)
+        function renderLoop() {
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                if (canvas.width !== video.videoWidth) resizeCanvas();
+
+                // 1. 繪製視訊畫面
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                // 2. 獲取症狀參數
+                const missing = parseFloat(paramMissing.value) / 100;
+                const jitter = parseFloat(paramJitter.value) / 100;
+                const swap = parseFloat(paramSwap.value) / 100;
+                const crowding = parseFloat(paramCrowding.value) / 100;
+
+                const time = Date.now() * 0.004;
+
+                if (currentMode === 'ocr') {
+                    renderOcrSpldOverlay(time, missing, jitter, swap, crowding);
+                } else {
+                    renderCustomTextOverlay(time, missing, jitter, swap, crowding);
+                }
+
+                // 3. 日系柔和視覺壓力濾鏡
+                if (crowding > 0.3) {
+                    const gradient = ctx.createRadialGradient(
+                        canvas.width / 2, canvas.height / 2, canvas.width * 0.25,
+                        canvas.width / 2, canvas.height / 2, canvas.width * 0.75
+                    );
+                    gradient.addColorStop(0, 'rgba(251, 249, 245, 0)');
+                    gradient.addColorStop(1, `rgba(110, 90, 75, ${crowding * 0.35})`);
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+            }
+
+            animationFrameId = requestAnimationFrame(renderLoop);
+        }
+
+        // 模式 A：OCR 區塊覆蓋
+        function renderOcrSpldOverlay(time, missing, jitter, swap, crowding) {
+            ocrResults.forEach((wordItem, index) => {
+                const { bbox, text } = wordItem;
+                const x = bbox.x0;
+                const y = bbox.y0;
+                const w = bbox.x1 - bbox.x0;
+                const h = bbox.y1 - bbox.y0;
+
+                // 日系和紙感白底覆蓋
+                ctx.fillStyle = 'rgba(251, 249, 245, 0.9)';
+                ctx.fillRect(x - 2, y - 2, w + 4, h + 4);
+
+                drawSpldText(text, x, y + h * 0.8, h * 0.85, time + index, missing, jitter, swap, crowding);
+            });
+        }
+
+        // 模式 B：課文教材疊加
+        function renderCustomTextOverlay(time, missing, jitter, swap, crowding) {
+            const rawText = customTextInput.value || "國文預習第一課";
+            const fontSize = Math.max(22, canvas.height * 0.048);
+            const startX = canvas.width * 0.12;
+            let startY = canvas.height * 0.32;
+
+            // 半透明和紙卡片背景
+            ctx.fillStyle = 'rgba(251, 249, 245, 0.88)';
+            ctx.roundRect(startX - 24, startY - fontSize - 20, canvas.width * 0.76, fontSize * 4.5, 20);
+            ctx.fill();
+            ctx.strokeStyle = '#E6E1DA';
+            ctx.stroke();
+
+            const chars = rawText.split('');
+            let curX = startX;
+            let curY = startY;
+
+            chars.forEach((char, idx) => {
+                if (curX > canvas.width * 0.8) {
+                    curX = startX;
+                    curY += fontSize * (1.5 - crowding * 0.45);
+                }
+
+                drawSpldCharacter(char, curX, curY, fontSize, time + idx, missing, jitter, swap, crowding);
+                curX += fontSize * (1.0 - crowding * 0.2);
+            });
+        }
+
+        // 單字渲染 (包含缺筆劃/跳動/錯位)
+        function drawSpldCharacter(char, x, y, size, timeSeed, missing, jitter, swap, crowding) {
+            ctx.save();
+
+            let offsetX = 0;
+            let offsetY = 0;
+            let rotation = 0;
+
+            if (jitter > 0) {
+                offsetX = Math.sin(timeSeed * 2.8) * (jitter * 10);
+                offsetY = Math.cos(timeSeed * 2.2) * (jitter * 14);
+                rotation = Math.sin(timeSeed * 1.2) * (jitter * 0.25);
+            }
+
+            let scaleX = 1;
+            let displayChar = char;
+
+            if (swap > 0.2 && Math.random() < swap * 0.35) {
+                if (char === 'b') displayChar = 'd';
+                else if (char === 'p') displayChar = 'q';
+                else if (char === 'd') displayChar = 'b';
+                else scaleX = -1;
+            }
+
+            ctx.translate(x + offsetX, y + offsetY);
+            ctx.rotate(rotation);
+            ctx.scale(scaleX, 1);
+
+            ctx.font = `700 ${size}px 'Zen Maru Gothic', 'Noto Serif TC', serif`;
+            ctx.fillStyle = '#4A4036'; // 木質黑棕色
+
+            if (crowding > 0.4) {
+                ctx.filter = `blur(${crowding * 2}px)`;
+            }
+
+            ctx.fillText(displayChar, 0, 0);
+
+            // 缺筆劃（Missing Strokes）
+            if (missing > 0.1) {
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.fillStyle = 'rgba(0, 0, 0, 1)';
+
+                const numClips = Math.floor(missing * 3.5);
+                for (let i = 0; i < numClips; i++) {
+                    const clipX = (Math.sin(timeSeed + i) * 0.4) * size;
+                    const clipY = -size * 0.65 + (Math.cos(timeSeed * 2 + i) * 0.4 + 0.5) * size;
+                    const clipW = size * (0.12 + missing * 0.2);
+                    const clipH = size * (0.08 + missing * 0.12);
+
+                    ctx.beginPath();
+                    ctx.ellipse(clipX, clipY, clipW, clipH, Math.PI / 4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            ctx.restore();
+        }
+
+        function drawSpldText(text, x, y, size, timeSeed, missing, jitter, swap, crowding) {
+            const chars = text.split('');
+            let curX = x;
+            chars.forEach((c, i) => {
+                drawSpldCharacter(c, curX, y, size, timeSeed + i, missing, jitter, swap, crowding);
+                curX += size * 0.88;
+            });
+        }
+
+        // 切換頁籤
+        tabModeOcr.onclick = () => {
+            currentMode = 'ocr';
+            tabModeOcr.className = 'px-3.5 py-1.5 rounded-xl bg-wood-700 text-washi transition shadow-sm';
+            tabModeText.className = 'px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark';
+            customTextInputContainer.classList.add('hidden');
+        };
+
+        tabModeText.onclick = () => {
+            currentMode = 'sandbox';
+            tabModeText.className = 'px-3.5 py-1.5 rounded-xl bg-wood-700 text-washi transition shadow-sm';
+            tabModeOcr.className = 'px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark';
+            customTextInputContainer.classList.remove('hidden');
+        };
+
+        // 預設課文
+        presetBtn1.onclick = () => customTextInput.value = "國文預習第一課：床前明月光，疑是地上霜。";
+        presetBtn2.onclick = () => customTextInput.value = "The quick brown fox jumps over the lazy dog (b & d mirror test).";
+
+        // 收折面板
+        let isCollapsed = false;
+        collapseBtn.onclick = () => {
+            isCollapsed = !isCollapsed;
+            controlsPanel.style.transform = isCollapsed ? 'translateY(78%)' : 'translateY(0)';
+            collapseBtn.innerHTML = isCollapsed ? '<i class="fa-solid fa-chevron-up"></i> 展開選單' : '<i class="fa-solid fa-chevron-down"></i> 收折選單';
+        };
+
+        // 相機與 Modal 控制
+        switchCamBtn.onclick = () => {
+            facingMode = facingMode === 'environment' ? 'user' : 'environment';
+            startCamera();
+        };
+
+        toggleInfoBtn.onclick = () => infoModal.classList.remove('hidden');
+        closeModalBtn.onclick = () => infoModal.classList.add('hidden');
+        startCamBtn.onclick = startCamera;
+    </script>
+</body>
+</html>
