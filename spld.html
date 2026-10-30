@@ -160,7 +160,7 @@
 
                 <!-- 經典範文選擇下拉選單 (Tab: 經典範文) -->
                 <div id="preset-article-container" class="hidden mb-3">
-                    <label class="block text-[11px] sm:text-xs font-medium text-wood-700 mb-1">選擇古詩文 / 經典課文 / 英文小故事（白底黑字風格）：</label>
+                    <label class="block text-[11px] sm:text-xs font-medium text-wood-700 mb-1">經典範文體驗（白底黑字風格）：</label>
                     <div class="flex flex-col sm:flex-row gap-2">
                         <select id="preset-article-select" class="flex-1 bg-washi border border-stoneborder rounded-xl px-3 py-2 text-xs text-wood-800 focus:outline-none focus:border-wood-500 font-serif">
                             <option value="【古詩】唐·李白《靜夜思》：床前明月光，疑是地上霜。舉頭望明月，低頭思故鄉。">【古詩】唐·李白《靜夜思》</option>
@@ -179,13 +179,16 @@
 
                 <!-- 自訂教材輸入欄 (Tab: 自訂輸入) -->
                 <div id="custom-text-input-container" class="hidden mb-3">
-                    <label class="block text-[11px] sm:text-xs font-medium text-wood-700 mb-1">自訂模擬課文 / 句子：</label>
+                    <label class="block text-[11px] sm:text-xs font-medium text-wood-700 mb-1">自訂任何文字體驗：</label>
                     <div class="flex flex-col sm:flex-row gap-2">
                         <input type="text" id="custom-text-input" value="國文預習第一課：床前明月光，疑是地上霜。" 
                             class="flex-1 bg-washi border border-stoneborder rounded-xl px-3 py-1.5 sm:py-2 text-xs text-wood-800 focus:outline-none focus:border-wood-500">
                         <div class="flex gap-2">
                             <button id="preset-btn-1" class="flex-1 sm:flex-none bg-washidark hover:bg-wood-100 text-wood-700 text-xs px-3 py-1.5 rounded-xl border border-stoneborder">國文範例</button>
                             <button id="preset-btn-2" class="flex-1 sm:flex-none bg-washidark hover:bg-wood-100 text-wood-700 text-xs px-3 py-1.5 rounded-xl border border-stoneborder">English</button>
+                            <button id="preview-custom-btn" class="flex-1 sm:flex-none bg-wood-700 hover:bg-wood-800 text-washi font-medium px-4 py-1.5 sm:py-2 rounded-xl text-xs transition shadow-sm flex items-center justify-center gap-1.5 shrink-0 active:scale-95">
+                                <i class="fa-solid fa-play"></i> 立即體驗
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -319,6 +322,7 @@
         const customTextInput = document.getElementById('custom-text-input');
         const presetBtn1 = document.getElementById('preset-btn-1');
         const presetBtn2 = document.getElementById('preset-btn-2');
+        const previewCustomBtn = document.getElementById('preview-custom-btn');
         
         const paramMissing = document.getElementById('param-missing');
         const paramJitter = document.getElementById('param-jitter');
@@ -805,6 +809,15 @@
             startOverlay.classList.add('hidden');
             statusBadge.classList.remove('hidden');
             statusText.innerText = '範文體驗模式';
+            resizeCanvas();
+            if (!animationFrameId) renderLoop();
+        };
+
+        previewCustomBtn.onclick = () => {
+            currentMode = 'sandbox';
+            startOverlay.classList.add('hidden');
+            statusBadge.classList.remove('hidden');
+            statusText.innerText = '自訂文字體驗';
             resizeCanvas();
             if (!animationFrameId) renderLoop();
         };
