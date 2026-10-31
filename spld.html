@@ -177,15 +177,15 @@
 
                 <!-- 頁面二內容：經典範文體驗 -->
                 <div id="preset-article-container" class="hidden mb-3">
-                    <label class="block text-[11px] sm:text-xs font-medium text-wood-700 mb-1">選擇經典古詩文 / 英文小故事：</label>
+                    <label class="block text-[11px] sm:text-xs font-medium text-wood-700 mb-1">選擇高分拆率經典古詩文 / 英文小故事：</label>
                     <div class="flex flex-col sm:flex-row gap-2">
                         <select id="preset-article-select" class="flex-1 bg-washi border border-stoneborder rounded-xl px-3 py-2 text-xs text-wood-800 focus:outline-none focus:border-wood-500 font-serif">
-                            <option value="【高拆解率古詩】唐·李白《靜夜思》：床前明月光，疑是地上霜。舉頭望明月，低頭思故鄉。">唐·李白《靜夜思》</option>
-                            <option value="【高拆解率古詩】唐·孟浩然《春曉》：春眠不覺曉，處處聞啼鳥。夜來風雨聲，花落知多少。">唐·孟浩然《春曉》</option>
-                            <option value="【高拆解率古詩】唐·王之渙《登鸛雀樓》：白日依山盡，黃河入海流。欲窮千里目，更上一層樓。">唐·王之渙《登鸛雀樓》</option>
-                            <option value="【高拆解率古詩】唐·王維《相思》：紅豆生南國，春來發幾枝。願君多採擷，此物最相思。">唐·王維《相思》</option>
-                            <option value="【高拆解率古詩】唐·孟郊《遊子吟》：慈母手中線，遊子身上衣。臨行密密縫，意恐遲遲歸。誰言寸草心，報得三春暉。">唐·孟郊《遊子吟》</option>
-                            <option value="【高拆解率古文】唐·劉禹錫《陋室銘》：山不在高，有仙則名。水不在深，有龍則靈。斯是陋室，惟吾德馨。苔痕上階綠，草色入簾青。">唐·劉禹錫《陋室銘》</option>
+                            <option value="【高拆解率古詩】唐·李白《靜夜思》：床前明月光，疑是地上霜。舉頭望明月，低頭思故鄉。">【高拆解率古詩】唐·李白《靜夜思》</option>
+                            <option value="【高拆解率古詩】唐·孟浩然《春曉》：春眠不覺曉，處處聞啼鳥。夜來風雨聲，花落知多少。">【高拆解率古詩】唐·孟浩然《春曉》</option>
+                            <option value="【高拆解率古詩】唐·王之渙《登鸛雀樓》：白日依山盡，黃河入海流。欲窮千里目，更上一層樓。">【高拆解率古詩】唐·王之渙《登鸛雀樓》</option>
+                            <option value="【高拆解率古詩】唐·王維《相思》：紅豆生南國，春來發幾枝。願君多採擷，此物最相思。">【高拆解率古詩】唐·王維《相思》</option>
+                            <option value="【高拆解率古詩】唐·孟郊《遊子吟》：慈母手中線，遊子身上衣。臨行密密縫，意恐遲遲歸。誰言寸草心，報得三春暉。">【高拆解率古詩】唐·孟郊《遊子吟》</option>
+                            <option value="【高拆解率古文】唐·劉禹錫《陋室銘》：山不在高，有仙則名。水不在深，有龍則靈。斯是陋室，惟吾德馨。苔痕上階綠，草色入簾青。">【高拆解率古文】唐·劉禹錫《陋室銘》</option>
                             <option value="English Story: The Little Blue Dog: Once upon a time, a playful little blue dog named Toby loved to run in the green park with his friends. Reading can feel confusing when letters like b, d, p, and q swirl around on the page.">【English】The Little Blue Dog</option>
                             <option value="English Story: A Rainy Day Adventure: Raindrops started falling gently on the window screen. Emma put on her yellow raincoat and red boots to jump in the big water puddles outside.">【English】A Rainy Day Adventure</option>
                         </select>
@@ -558,29 +558,29 @@
 
         window.addEventListener('resize', resizeCanvas);
 
-        // 背景雙語 (chi_tra + eng) OCR 文字檢測優化 (新增對比度與自適應二值化前處理)
+        // 背景雙語 (chi_tra + eng) OCR 文字檢測優化 (針對手機與 iPad 螢幕比例與解析度優化)
         async function processOCR() {
             if (currentMode !== 'ocr' || isOcrProcessing || !video.srcObject || video.paused) return;
 
             isOcrProcessing = true;
-            statusText.innerText = '正在高精度偵測中英文文字...';
+            statusText.innerText = '正在流暢偵測文字...';
 
             try {
                 const tempCanvas = document.createElement('canvas');
-                tempCanvas.width = canvas.width;
-                tempCanvas.height = canvas.height;
+                // 移動端與 iPad 採用等比縮放高解析度緩衝，確保文字邊界不失真
+                const scaleFactor = window.innerWidth < 768 ? 1.0 : 1.2;
+                tempCanvas.width = canvas.width * scaleFactor;
+                tempCanvas.height = canvas.height * scaleFactor;
                 const tempCtx = tempCanvas.getContext('2d');
                 
-                // 1. 繪製並進行影像前置處理（提高對比度以改善中文筆劃細節識別）
                 tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
                 const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
                 const data = imgData.data;
                 
-                // 簡單高效的高對比灰階二值化增強（過濾陰影與反光）
+                // 行動端自適應二值化：增強手機拍攝反光與昏暗環境下的字體對比度
                 for (let i = 0; i < data.length; i += 4) {
                     let avg = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
-                    // 動態對比度拉伸
-                    let enhanced = avg < 120 ? Math.max(0, avg - 25) : Math.min(255, avg + 25);
+                    let enhanced = avg < 125 ? Math.max(0, avg - 30) : Math.min(255, avg + 30);
                     data[i] = enhanced;
                     data[i + 1] = enhanced;
                     data[i + 2] = enhanced;
@@ -589,22 +589,32 @@
 
                 if (!worker) {
                     worker = await Tesseract.createWorker('chi_tra+eng');
-                    // 設定參數以提升課本密集段落與字詞邊界捕捉率
                     await worker.setParameters({
-                        tessedit_pageseg_mode: Tesseract.PSM.AUTO,
+                        tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT, // 優化手機拍字卡或不規則課本排版
                     });
                 }
 
                 const result = await worker.recognize(tempCanvas);
                 if (result && result.data && result.data.words) {
-                    // 放寬並過濾信賴度大於 25 的文字區塊，確保繁體中文筆劃與英文單字不漏接
-                    ocrResults = result.data.words.filter(w => w.text.trim().length > 0 && w.confidence > 25);
+                    const invScale = 1 / scaleFactor;
+                    // 將 OCR 座標反向對應至當前畫布尺寸，並過濾有效字元
+                    ocrResults = result.data.words
+                        .filter(w => w.text.trim().length > 0 && w.confidence > 20)
+                        .map(w => ({
+                            ...w,
+                            bbox: {
+                                x0: w.bbox.x0 * invScale,
+                                y0: w.bbox.y0 * invScale,
+                                x1: w.bbox.x1 * invScale,
+                                y1: w.bbox.y1 * invScale
+                            }
+                        }));
                 }
             } catch (e) {
-                console.error("OCR 識別錯誤:", e);
+                console.error("行動端 OCR 識別錯誤:", e);
             } finally {
                 isOcrProcessing = false;
-                statusText.innerText = `已精準鎖定 ${ocrResults.length} 個字詞區塊`;
+                statusText.innerText = `已捕捉 ${ocrResults.length} 個字詞區塊`;
             }
         }
 
@@ -647,7 +657,7 @@
 
             animationFrameId = requestAnimationFrame(renderLoop);
         }
-
+        // 經典範文繪製模式 (支援英文與古詩文置中及排版)
         function renderArticleOverlay(fullText, time, missing, jitter, swap, crowding) {
             const padding = Math.max(16, canvas.width * 0.04);
             const cardWidth = canvas.width - padding * 2;
@@ -804,9 +814,10 @@
             for (let i = 0; i < charCount; i++) {
                 const char = text[i];
                 const pseudoRandom = (Math.sin(secondSeed * 1000 + i * 37) + 1) / 2;
-                const isSwapTriggered = swap > 0 && (pseudoRandom < swap);
+                // 當 missing 或 swap 為 1 (100%) 時強制觸發全部文字
+                const isSwapTriggered = swap >= 1.0 || (swap > 0 && (pseudoRandom < swap));
                 const missingRandom = (Math.sin(secondSeed * 800 + i * 53) + 1) / 2;
-                const isMissingTriggered = missing > 0 && (missingRandom < missing);
+                const isMissingTriggered = missing >= 1.0 || (missing > 0 && (missingRandom < missing));
 
                 const hasRadical = !!radicalMap[char];
                 const isSplitNeeded = hasRadical && (isSwapTriggered || isMissingTriggered);
@@ -833,9 +844,9 @@
                 }
 
                 const pseudoRandom = (Math.sin(secondSeed * 1000 + i * 37) + 1) / 2;
-                const isSwapTriggered = swap > 0 && (pseudoRandom < swap);
+                const isSwapTriggered = swap >= 1.0 || (swap > 0 && (pseudoRandom < swap));
                 const missingRandom = (Math.sin(secondSeed * 800 + i * 53) + 1) / 2;
-                const isMissingTriggered = missing > 0 && (missingRandom < missing);
+                const isMissingTriggered = missing >= 1.0 || (missing > 0 && (missingRandom < missing));
                 const styleRandom = (Math.cos(secondSeed * 500 + i * 19) + 1) / 2;
 
                 if (isSplitNeeded) {
@@ -927,7 +938,7 @@
 
                 if (swap > 0) {
                     const pseudoRandom = (Math.sin(secondSeed * 1000 + i * 43) + 1) / 2;
-                    if (pseudoRandom < swap) {
+                    if (swap >= 1.0 || pseudoRandom < swap) {
                         const styleRandom = (Math.cos(secondSeed * 700 + i * 17) + 1) / 2;
                         if (styleRandom < 0.5) ctx.scale(-1, 1);
                         else ctx.scale(1, -1);
@@ -935,7 +946,7 @@
                 }
 
                 ctx.fillStyle = '#2C2621';
-                ctx.globalAlpha = (missing > 0 && Math.random() < missing * 0.25) ? 0.3 : 1.0;
+                ctx.globalAlpha = (missing > 0 && (missing >= 1.0 || Math.random() < missing * 0.25)) ? 0.3 : 1.0;
                 ctx.fillText(char, 0, 0);
                 ctx.restore();
                 startX += charWidth;
@@ -973,7 +984,7 @@
 
                     if (swap > 0) {
                         const pseudoRandom = (Math.sin(secondSeed * 1000 + globalCharIdx * 29) + 1) / 2;
-                        if (pseudoRandom < swap) {
+                        if (swap >= 1.0 || pseudoRandom < swap) {
                             const styleRandom = (Math.cos(secondSeed * 700 + globalCharIdx * 13) + 1) / 2;
                             if (styleRandom < 0.5) ctx.scale(-1, 1);
                             else ctx.scale(1, -1);
@@ -981,7 +992,7 @@
                     }
 
                     const missingRandom = (Math.sin(secondSeed * 800 + globalCharIdx * 53) + 1) / 2;
-                    const isMissingTriggered = missing > 0 && (missingRandom < missing);
+                    const isMissingTriggered = missing >= 1.0 || (missing > 0 && (missingRandom < missing));
 
                     if (!isMissingTriggered) {
                         ctx.fillStyle = '#2C2621';
@@ -1065,7 +1076,7 @@
             startOverlay.classList.add('hidden');
             camControlsBar.classList.add('hidden');
 
-            // 經典範文模式開始值：全部為 0
+            // 經典範文模式開始值：全部為 0 (正常)
             setParamsValue(0);
 
             resizeCanvas();
@@ -1082,7 +1093,7 @@
             startOverlay.classList.add('hidden');
             camControlsBar.classList.add('hidden');
 
-            // 自訂文字模式開始值：全部為 0
+            // 自訂文字模式開始值：全部為 0 (正常)
             setParamsValue(0);
 
             resizeCanvas();
