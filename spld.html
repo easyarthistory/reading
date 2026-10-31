@@ -2,7 +2,9 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>SpLD 讀寫障礙視覺模擬器 - 體驗孩子眼中的文字</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -39,12 +41,18 @@
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700;900&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700;900&family=Zen+Maru Gothic:wght@400;500;700&display=swap');
         
         body {
             font-family: 'Zen Maru Gothic', 'Noto Sans TC', sans-serif;
             background-color: #FBF9F5;
             color: #4A4036;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
         }
 
         /* 溫和日系質感的毛玻璃卡片 */
@@ -908,7 +916,7 @@
                 '深': ['氵', '深', 'horizontal'], '仙': ['亻', '山', 'horizontal'], '龍': ['立', '月', 'horizontal'], '漁': ['氵', '魚', 'horizontal'],
                 '繽': ['纟', '賓', 'horizontal'], '紛': ['纟', '分', 'horizontal'], '綠': ['纟', '彔', 'horizontal'], '青': ['龶', '月', 'vertical'],
                 '預': ['予', '頁', 'horizontal'], '習': ['羽', '白', 'vertical'], '障': ['阝', '章', 'horizontal'], '礙': ['石', '疑', 'horizontal'],
-                '體': ['骨', '豊', 'horizontal'], '飄': ['票', '風', 'horizontal'], '浮': ['氵', '孚', 'horizontal'], '陋': ['阝', '丙', 'horizontal']
+                '體': ['骨', '豊', 'horizontal'], '飄': ['票', '風', 'horizontal'], '浮': ['氵', '孚', 'horizontal'], '陋': ['阝', '丙', 'horizontal'],
                 '明': ['日', '月', 'horizontal'], '休': ['人', '木', 'horizontal'], '林': ['木', '木', 'horizontal'], '鮮': ['魚', '羊', 'horizontal'], 
                 '和': ['禾', '口', 'horizontal'], '語': ['言', '吾', 'horizontal'], '晴': ['日', '青', 'horizontal'], '暗': ['日', '音', 'horizontal'],
                 '暖': ['日', '爰', 'horizontal'], '解': ['角', '刀牛', 'horizontal'], '張': ['弓', '長', 'horizontal'],'湖': ['氵', '胡', 'horizontal'], 
