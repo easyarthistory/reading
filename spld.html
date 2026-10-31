@@ -2,9 +2,7 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SpLD 讀寫障礙視覺模擬器 - 體驗孩子眼中的文字</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -41,18 +39,12 @@
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700;900&family=Zen+Maru Gothic:wght@400;500;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@500;700;900&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
         
         body {
             font-family: 'Zen Maru Gothic', 'Noto Sans TC', sans-serif;
             background-color: #FBF9F5;
             color: #4A4036;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            padding-top: env(safe-area-inset-top);
-            padding-bottom: env(safe-area-inset-bottom);
-            padding-left: env(safe-area-inset-left);
-            padding-right: env(safe-area-inset-right);
         }
 
         /* 溫和日系質感的毛玻璃卡片 */
@@ -185,15 +177,15 @@
 
                 <!-- 頁面二內容：經典範文體驗 -->
                 <div id="preset-article-container" class="hidden mb-3">
-                    <label class="block text-[11px] sm:text-xs font-medium text-wood-700 mb-1">選擇經典古詩文 / 英文小故事：</label>
+                    <label class="block text-[11px] sm:text-xs font-medium text-wood-700 mb-1">選擇高分拆率經典古詩文 / 英文小故事：</label>
                     <div class="flex flex-col sm:flex-row gap-2">
                         <select id="preset-article-select" class="flex-1 bg-washi border border-stoneborder rounded-xl px-3 py-2 text-xs text-wood-800 focus:outline-none focus:border-wood-500 font-serif">
-                            <option value="【高拆解率古詩】唐·李白《靜夜思》：床前明月光，疑是地上霜。舉頭望明月，低頭思故鄉。">唐·李白《靜夜思》</option>
-                            <option value="【高拆解率古詩】唐·孟浩然《春曉》：春眠不覺曉，處處聞啼鳥。夜來風雨聲，花落知多少。">唐·孟浩然《春曉》</option>
-                            <option value="【高拆解率古詩】唐·王之渙《登鸛雀樓》：白日依山盡，黃河入海流。欲窮千里目，更上一層樓。">唐·王之渙《登鸛雀樓》</option>
-                            <option value="【高拆解率古詩】唐·王維《相思》：紅豆生南國，春來發幾枝。願君多採擷，此物最相思。">唐·王維《相思》</option>
-                            <option value="【高拆解率古詩】唐·孟郊《遊子吟》：慈母手中線，遊子身上衣。臨行密密縫，意恐遲遲歸。誰言寸草心，報得三春暉。">唐·孟郊《遊子吟》</option>
-                            <option value="【高拆解率古文】唐·劉禹錫《陋室銘》：山不在高，有仙則名。水不在深，有龍則靈。斯是陋室，惟吾德馨。苔痕上階綠，草色入簾青。">唐·劉禹錫《陋室銘》</option>
+                            <option value="【高拆解率古詩】唐·李白《靜夜思》：床前明月光，疑是地上霜。舉頭望明月，低頭思故鄉。">【高拆解率古詩】唐·李白《靜夜思》</option>
+                            <option value="【高拆解率古詩】唐·孟浩然《春曉》：春眠不覺曉，處處聞啼鳥。夜來風雨聲，花落知多少。">【高拆解率古詩】唐·孟浩然《春曉》</option>
+                            <option value="【高拆解率古詩】唐·王之渙《登鸛雀樓》：白日依山盡，黃河入海流。欲窮千里目，更上一層樓。">【高拆解率古詩】唐·王之渙《登鸛雀樓》</option>
+                            <option value="【高拆解率古詩】唐·王維《相思》：紅豆生南國，春來發幾枝。願君多採擷，此物最相思。">【高拆解率古詩】唐·王維《相思》</option>
+                            <option value="【高拆解率古詩】唐·孟郊《遊子吟》：慈母手中線，遊子身上衣。臨行密密縫，意恐遲遲歸。誰言寸草心，報得三春暉。">【高拆解率古詩】唐·孟郊《遊子吟》</option>
+                            <option value="【高拆解率古文】唐·劉禹錫《陋室銘》：山不在高，有仙則名。水不在深，有龍則靈。斯是陋室，惟吾德馨。苔痕上階綠，草色入簾青。">【高拆解率古文】唐·劉禹錫《陋室銘》</option>
                             <option value="English Story: The Little Blue Dog: Once upon a time, a playful little blue dog named Toby loved to run in the green park with his friends. Reading can feel confusing when letters like b, d, p, and q swirl around on the page.">【English】The Little Blue Dog</option>
                             <option value="English Story: A Rainy Day Adventure: Raindrops started falling gently on the window screen. Emma put on her yellow raincoat and red boots to jump in the big water puddles outside.">【English】A Rainy Day Adventure</option>
                         </select>
@@ -916,32 +908,7 @@
                 '深': ['氵', '深', 'horizontal'], '仙': ['亻', '山', 'horizontal'], '龍': ['立', '月', 'horizontal'], '漁': ['氵', '魚', 'horizontal'],
                 '繽': ['纟', '賓', 'horizontal'], '紛': ['纟', '分', 'horizontal'], '綠': ['纟', '彔', 'horizontal'], '青': ['龶', '月', 'vertical'],
                 '預': ['予', '頁', 'horizontal'], '習': ['羽', '白', 'vertical'], '障': ['阝', '章', 'horizontal'], '礙': ['石', '疑', 'horizontal'],
-                '體': ['骨', '豊', 'horizontal'], '飄': ['票', '風', 'horizontal'], '浮': ['氵', '孚', 'horizontal'], '陋': ['阝', '丙', 'horizontal'],
-                '明': ['日', '月', 'horizontal'], '休': ['人', '木', 'horizontal'], '林': ['木', '木', 'horizontal'], '鮮': ['魚', '羊', 'horizontal'], 
-                '和': ['禾', '口', 'horizontal'], '語': ['言', '吾', 'horizontal'], '晴': ['日', '青', 'horizontal'], '暗': ['日', '音', 'horizontal'],
-                '暖': ['日', '爰', 'horizontal'], '解': ['角', '刀牛', 'horizontal'], '張': ['弓', '長', 'horizontal'],'湖': ['氵', '胡', 'horizontal'], 
-                '清': ['氵', '青', 'horizontal'], '河': ['氵', '可', 'horizontal'], '海': ['氵', '每', 'horizontal'],'江': ['氵', '工', 'horizontal'], 
-                '流': ['氵', '㐬', 'horizontal'], '深': ['氵', '罙', 'horizontal'], '波': ['氵', '皮', 'horizontal'], '紅': ['糸', '工', 'horizontal'], 
-                '細': ['糸', '田', 'horizontal'], '綠': ['糸', '彔', 'horizontal'], '線': ['糸', '泉', 'horizontal'], '給': ['糸', '合', 'horizontal'],
-                '極': ['木', '亟', 'horizontal'], '校': ['木', '交', 'horizontal'], '村': ['木', '寸', 'horizontal'], '枝': ['木', '支', 'horizontal'], 
-                '地': ['土', '也', 'horizontal'], '城': ['土', '成', 'horizontal'], '場': ['土', '昜', 'horizontal'], '境': ['土', '竟', 'horizontal'], 
-                '時': ['日', '寺', 'horizontal'], '晚': ['日', '免', 'horizontal'], '映': ['日', '央', 'horizontal'], '旺': ['日', '王', 'horizontal'], 
-                '昭': ['日', '召', 'horizontal'], '睡': ['目', '垂', 'horizontal'], '眼': ['目', '艮', 'horizontal'], '睛': ['目', '青', 'horizontal'], 
-                '睇': ['目', '弟', 'horizontal'], '神': ['礻', '申', 'horizontal'], '祠': ['礻', '司', 'horizontal'], '祥': ['礻', '羊', 'horizontal'], 
-                '福': ['礻', '畐', 'horizontal'], '禮': ['礻', '豐', 'horizontal'], '祝': ['礻', '兄', 'horizontal'], '結': ['糸', '吉', 'horizontal'], 
-                '補': ['衤', '甫', 'horizontal'], '衫': ['衤', '彡', 'horizontal'], '初': ['衤', '刀', 'horizontal'], '袖': ['衤', '由', 'horizontal'], 
-                '褲': ['衤', '庫', 'horizontal'], '話': ['言', '舌', 'horizontal'], '説': ['言', '兌', 'horizontal'], '記': ['言', '己', 'horizontal'], 
-                '許': ['言', '午', 'horizontal'], '謝': ['言', '射', 'horizontal'], '識': ['言', '戠', 'horizontal'], '讀': ['言', '賣', 'horizontal'], 
-                '詩': ['言', '寺', 'horizontal'], '誠': ['言', '成', 'horizontal'], '信': ['人', '言', 'horizontal'], '他': ['人', '也', 'horizontal'], 
-                '你': ['人', '爾', 'horizontal'], '做': ['人', '故', 'horizontal'], '位': ['人', '立', 'horizontal'], '住': ['人', '主', 'horizontal'], 
-                '作': ['人', '乍', 'horizontal'], '保': ['人', '呆', 'horizontal'], '健': ['人', '建', 'horizontal'], '偉': ['人', '韋', 'horizontal'], 
-                '傳': ['人', '專', 'horizontal'], '銀': ['金', '艮', 'horizontal'], '鐵': ['金', '𢧋', 'horizontal'], '吸': ['口', '及', 'horizontal'],
-                '銅': ['金', '同', 'horizontal'], '鐘': ['金', '童', 'horizontal'], '鏡': ['金', '竟', 'horizontal'], '針': ['金', '十', 'horizontal'], 
-                '錢': ['金', '戔', 'horizontal'], '鎖': ['金', '𧵁', 'horizontal'], '玩': ['王', '元', 'horizontal'], '球': ['王', '求', 'horizontal'],
-                '環': ['王', '瞏', 'horizontal'],'珍': ['王', '㐱', 'horizontal'],'珠': ['王', '朱', 'horizontal'],'班': ['王', '刀王', 'horizontal'],
-                '現': ['王', '見', 'horizontal'],'吃': ['口', '乞', 'horizontal'],'吹': ['口', '欠', 'horizontal'],'喊': ['口', '咸', 'horizontal'],
-                '味': ['口', '未', 'horizontal'],'唱': ['口', '昌', 'horizontal'],'叫': ['口', '丩', 'horizontal'],'吐': ['口', '土', 'horizontal'],
-                '暉': ['日', '軍', 'horizontal'],'鄰': ['米㐄', '阝', 'horizontal'],'理': ['王', '里', 'horizontal'],
+                '體': ['骨', '豊', 'horizontal'], '飄': ['票', '風', 'horizontal'], '浮': ['氵', '孚', 'horizontal'], '陋': ['阝', '丙', 'horizontal']
             };
 
             let estimatedTotalWidth = 0;
