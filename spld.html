@@ -922,7 +922,7 @@
                 const isMissingTriggered = missing > 0 && (missingRandom < missing);
 
                 const hasRadical = !!radicalMap[char];
-                const isSplitNeeded = hasRadical && (isSwapTriggered || (isMissingTriggered && missing < 1.0));
+                const isSplitNeeded = hasRadical && (isSwapTriggered || isMissingTriggered || missing >= 1.0);
 
                 splitStates.push(isSplitNeeded);
                 const width = isSplitNeeded ? fontSize * 1.35 : (ctx.measureText(char).width + baseSpacing);
