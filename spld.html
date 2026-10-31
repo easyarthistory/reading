@@ -1019,7 +1019,13 @@
                 camControlsBar.classList.remove('hidden');
             }
 
-            setParamsValue(50);
+            // 相機模式開始值：筆劃缺失100、部首錯位100、字體漂浮0、視覺擁擠0
+            paramMissing.value = 100;
+            paramSwap.value = 100;
+            paramJitter.value = 0;
+            paramCrowding.value = 0;
+            updateValLabels();
+
             resizeCanvas();
         };
 
@@ -1034,7 +1040,9 @@
             startOverlay.classList.add('hidden');
             camControlsBar.classList.add('hidden');
 
-            setParamsValue(50);
+            // 經典範文模式開始值：全部為 0
+            setParamsValue(0);
+
             resizeCanvas();
         };
 
@@ -1049,7 +1057,9 @@
             startOverlay.classList.add('hidden');
             camControlsBar.classList.add('hidden');
 
-            setParamsValue(50);
+            // 自訂文字模式開始值：全部為 0
+            setParamsValue(0);
+
             resizeCanvas();
         };
 
@@ -1082,6 +1092,19 @@
                 collapseBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> <span class="hidden sm:inline">收折選單</span>';
             }
         };
+
+        // 滑桿數值變動監聽與顯示更新
+        function updateValLabels() {
+            valMissing.innerText = `${paramMissing.value}%`;
+            valJitter.innerText = `${paramJitter.value}%`;
+            valSwap.innerText = `${paramSwap.value}%`;
+            valCrowding.innerText = `${paramCrowding.value}%`;
+        }
+
+        paramMissing.oninput = updateValLabels;
+        paramJitter.oninput = updateValLabels;
+        paramSwap.oninput = updateValLabels;
+        paramCrowding.oninput = updateValLabels;
 
         // 拍攝對比圖邏輯
         captureBtn.onclick = () => {
