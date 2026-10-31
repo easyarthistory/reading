@@ -108,8 +108,8 @@
     <!-- 主展示畫面區：滿版自動伸展 -->
     <main class="flex-1 relative flex flex-col items-center justify-start bg-washidark p-2 sm:p-4 md:p-6 w-full max-w-6xl mx-auto space-y-4">
         
-        <!-- 視訊與 Canvas 容器 -->
-        <div id="canvas-container" class="w-full min-h-[420px] sm:min-h-[500px] rounded-2xl sm:rounded-3xl overflow-hidden border border-stoneborder shadow-sm relative bg-washi flex items-center justify-center transition-all duration-300 cursor-crosshair">
+        <!-- 視訊與 Canvas 容器 (支援單指點擊對焦、拖動與雙指 Pinch 放大縮小) -->
+        <div id="canvas-container" class="w-full min-h-[420px] sm:min-h-[500px] rounded-2xl sm:rounded-3xl overflow-hidden border border-stoneborder shadow-sm relative bg-washi flex items-center justify-center transition-all duration-300 cursor-grab active:cursor-grabbing select-none">
             <!-- 實時視訊 (僅在相機模式使用) -->
             <video id="webcam" autoplay playsinline muted class="hidden"></video>
             
@@ -123,7 +123,7 @@
             <div id="cam-controls-bar" class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 muji-card px-3.5 py-2 rounded-2xl border border-stoneborder flex items-center gap-3 hidden shadow-md">
                 <div class="flex items-center gap-2 text-xs font-medium text-wood-700">
                     <i class="fa-solid fa-magnifying-glass-plus text-wood-500"></i>
-                    <span class="hidden min-[400px]:inline">變焦</span>
+                    <span class="hidden min-[400px]:inline">放大縮小</span>
                     <input type="range" id="zoom-slider" min="1" max="3" step="0.1" value="1" class="w-24 sm:w-36 h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
                     <span id="zoom-val" class="font-mono text-[11px] w-6">1.0x</span>
                 </div>
@@ -211,7 +211,7 @@
                     </div>
                 </div>
 
-                <!-- SpLD 視覺強度控制滑桿 -->
+                <!-- SpLD 視覺強度控制滑桿 (相機模式初始值：部首100，其他0) -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 text-xs">
                     
                     <!-- 1. 缺筆劃 -->
@@ -220,9 +220,9 @@
                             <label class="font-bold text-wood-800 flex items-center gap-1 text-[11px] sm:text-xs">
                                 <i class="fa-solid fa-eraser text-wood-500"></i> 筆劃缺失
                             </label>
-                            <span id="val-missing" class="text-wood-500 font-mono text-[10px] sm:text-xs">50%</span>
+                            <span id="val-missing" class="text-wood-500 font-mono text-[10px] sm:text-xs">0%</span>
                         </div>
-                        <input type="range" id="param-missing" min="0" max="100" value="50" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="param-missing" min="0" max="100" value="0" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
                     </div>
 
                     <!-- 2. 字體跳動 -->
@@ -231,9 +231,9 @@
                             <label class="font-bold text-wood-800 flex items-center gap-1 text-[11px] sm:text-xs">
                                 <i class="fa-solid fa-water text-matcha-500"></i> 字體漂浮
                             </label>
-                            <span id="val-jitter" class="text-wood-500 font-mono text-[10px] sm:text-xs">50%</span>
+                            <span id="val-jitter" class="text-wood-500 font-mono text-[10px] sm:text-xs">0%</span>
                         </div>
-                        <input type="range" id="param-jitter" min="0" max="100" value="50" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="param-jitter" min="0" max="100" value="0" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
                     </div>
 
                     <!-- 3. 部首鏡像/錯位 -->
@@ -242,9 +242,9 @@
                             <label class="font-bold text-wood-800 flex items-center gap-1 text-[11px] sm:text-xs">
                                 <i class="fa-solid fa-arrows-rotate text-wood-500"></i> 部首錯位
                             </label>
-                            <span id="val-swap" class="text-wood-500 font-mono text-[10px] sm:text-xs">50%</span>
+                            <span id="val-swap" class="text-wood-500 font-mono text-[10px] sm:text-xs">100%</span>
                         </div>
-                        <input type="range" id="param-swap" min="0" max="100" value="50" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="param-swap" min="0" max="100" value="100" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
                     </div>
 
                     <!-- 4. 行距壓迫 -->
@@ -253,9 +253,9 @@
                             <label class="font-bold text-wood-800 flex items-center gap-1 text-[11px] sm:text-xs">
                                 <i class="fa-solid fa-compress text-matcha-500"></i> 視覺擁擠
                             </label>
-                            <span id="val-crowding" class="text-wood-500 font-mono text-[10px] sm:text-xs">50%</span>
+                            <span id="val-crowding" class="text-wood-500 font-mono text-[10px] sm:text-xs">0%</span>
                         </div>
-                        <input type="range" id="param-crowding" min="0" max="100" value="50" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="param-crowding" min="0" max="100" value="0" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
                     </div>
 
                 </div>
@@ -309,7 +309,7 @@
                 </div>
 
                 <div class="p-4 bg-matcha-100 border border-matcha-500/20 rounded-2xl text-matcha-700 text-xs">
-                    <i class="fa-solid fa-seedling mr-1"></i> <strong>陪伴小貼士：</strong> 使用較大的字體、加大行距，或搭配暖黃色/淺綠色閱讀遮罩，能有效減緩孩子閱讀時的視覺壓力。
+                    <i class="fa-solid fa-seedling mr-1"></i> <strong>陪伴小貼士：</strong> 使用較大的字體、加大行距，或搭配暖黃色/淺綠色閱讀遮罩, 能有效減緩孩子閱讀時的視覺壓力。
                 </div>
             </div>
         </div>
@@ -420,6 +420,7 @@
         let ocrResults = [];
         let isOcrProcessing = false;
         let animationFrameId = null;
+        let currentZoomLevel = 1.0; // 數位備用縮放倍率
 
         // 啟動攝影機與相機硬體功能控制
         async function startCamera() {
@@ -481,26 +482,122 @@
                 zoomVal.innerText = '1.0x';
             }
         }
+        // 變焦/縮放更新函式
+        async function applyZoom(val) {
+            const min = parseFloat(zoomSlider.min) || 1;
+            const max = parseFloat(zoomSlider.max) || 3;
+            const targetZoom = Math.max(min, Math.min(max, val));
+            
+            currentZoomLevel = targetZoom;
+            zoomSlider.value = targetZoom;
+            zoomVal.innerText = `${targetZoom.toFixed(1)}x`;
 
-        zoomSlider.oninput = async () => {
-            const zoomValue = parseFloat(zoomSlider.value);
-            zoomVal.innerText = `${zoomValue.toFixed(1)}x`;
             if (videoTrack && videoTrack.applyConstraints) {
                 try {
-                    await videoTrack.applyConstraints({ advanced: [{ zoom: zoomValue }] });
+                    await videoTrack.applyConstraints({ advanced: [{ zoom: targetZoom }] });
                 } catch (e) {
-                    console.warn("變焦調整不受支援:", e);
+                    console.warn("硬體變焦不受支援，採用數位 Canvas 縮放補償:", e);
                 }
             }
+        }
+
+        zoomSlider.oninput = () => {
+            applyZoom(parseFloat(zoomSlider.value));
         };
 
+        // 手勢拖動與點擊對焦狀態控制
+        let isDragging = false;
+        let startY = 0;
+        let startZoomVal = 1;
+        let initialPinchDistance = null;
+        let hasMovedOrPinched = false;
+
+        function getPinchDistance(e) {
+            if (e.touches.length < 2) return 0;
+            const dx = e.touches[0].clientX - e.touches[1].clientX;
+            const dy = e.touches[0].clientY - e.touches[1].clientY;
+            return Math.hypot(dx, dy);
+        }
+
+        // 單指/雙指 TouchStart
+        canvasContainer.addEventListener('touchstart', (e) => {
+            if (currentMode !== 'ocr') return;
+            hasMovedOrPinched = false;
+
+            if (e.touches.length === 2) {
+                // 雙指 Pinch 放大縮小
+                initialPinchDistance = getPinchDistance(e);
+                startZoomVal = parseFloat(zoomSlider.value);
+            } else if (e.touches.length === 1) {
+                // 單指準備拖動變焦
+                isDragging = true;
+                startY = e.touches[0].clientY;
+                startZoomVal = parseFloat(zoomSlider.value);
+            }
+        }, { passive: true });
+
+        // TouchMove 拖動 / Pinch 變焦
+        canvasContainer.addEventListener('touchmove', (e) => {
+            if (currentMode !== 'ocr') return;
+
+            if (e.touches.length === 2 && initialPinchDistance) {
+                // 雙指捏合縮放
+                hasMovedOrPinched = true;
+                const currentDistance = getPinchDistance(e);
+                const scale = currentDistance / initialPinchDistance;
+                applyZoom(startZoomVal * scale);
+            } else if (e.touches.length === 1 && isDragging) {
+                // 單指上下拖動縮放畫面
+                const deltaY = startY - e.touches[0].clientY;
+                if (Math.abs(deltaY) > 8) {
+                    hasMovedOrPinched = true;
+                    const zoomSensitivity = 0.008;
+                    applyZoom(startZoomVal + deltaY * zoomSensitivity);
+                }
+            }
+        }, { passive: true });
+
+        // TouchEnd & Mouse 拖動放開
+        function endGesture() {
+            isDragging = false;
+            initialPinchDistance = null;
+        }
+
+        canvasContainer.addEventListener('touchend', endGesture);
+        canvasContainer.addEventListener('touchcancel', endGesture);
+
+        // 滑鼠模擬上下拖動縮放畫面 (用於電腦端)
+        canvasContainer.addEventListener('mousedown', (e) => {
+            if (currentMode !== 'ocr') return;
+            isDragging = true;
+            startY = e.clientY;
+            startZoomVal = parseFloat(zoomSlider.value);
+            hasMovedOrPinched = false;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging || currentMode !== 'ocr') return;
+            const deltaY = startY - e.clientY;
+            if (Math.abs(deltaY) > 5) {
+                hasMovedOrPinched = true;
+                const zoomSensitivity = 0.006;
+                applyZoom(startZoomVal + deltaY * zoomSensitivity);
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            endGesture();
+        });
+
+        // 僅當「點擊」（沒有發生拖動或縮放）時才觸發對焦
         canvasContainer.onclick = async (e) => {
-            if (currentMode !== 'ocr' || !videoTrack) return;
+            if (currentMode !== 'ocr' || !videoTrack || hasMovedOrPinched) return;
 
             const rect = canvasContainer.getBoundingClientRect();
             const clickX = e.clientX - rect.left;
             const clickY = e.clientY - rect.top;
 
+            // 顯示對焦視覺波紋
             focusRing.style.left = `${clickX}px`;
             focusRing.style.top = `${clickY}px`;
             focusRing.classList.remove('opacity-0', 'scale-150');
@@ -511,6 +608,7 @@
                 focusRing.classList.add('opacity-0', 'scale-150');
             }, 600);
 
+            // 硬體單次 / 自動對焦
             if (videoTrack.applyConstraints) {
                 try {
                     const capabilities = videoTrack.getCapabilities ? videoTrack.getCapabilities() : {};
@@ -567,7 +665,6 @@
 
             try {
                 const tempCanvas = document.createElement('canvas');
-                // 移動端與 iPad 採用等比縮放高解析度緩衝，確保文字邊界不失真
                 const scaleFactor = window.innerWidth < 768 ? 1.0 : 1.2;
                 tempCanvas.width = canvas.width * scaleFactor;
                 tempCanvas.height = canvas.height * scaleFactor;
@@ -577,7 +674,6 @@
                 const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
                 const data = imgData.data;
                 
-                // 行動端自適應二值化：增強手機拍攝反光與昏暗環境下的字體對比度
                 for (let i = 0; i < data.length; i += 4) {
                     let avg = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
                     let enhanced = avg < 125 ? Math.max(0, avg - 30) : Math.min(255, avg + 30);
@@ -590,14 +686,13 @@
                 if (!worker) {
                     worker = await Tesseract.createWorker('chi_tra+eng');
                     await worker.setParameters({
-                        tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT, // 優化手機拍字卡或不規則課本排版
+                        tessedit_pageseg_mode: Tesseract.PSM.SPARSE_TEXT,
                     });
                 }
 
                 const result = await worker.recognize(tempCanvas);
                 if (result && result.data && result.data.words) {
                     const invScale = 1 / scaleFactor;
-                    // 將 OCR 座標反向對應至當前畫布尺寸，並過濾有效字元
                     ocrResults = result.data.words
                         .filter(w => w.text.trim().length > 0 && w.confidence > 20)
                         .map(w => ({
@@ -627,7 +722,16 @@
                 if (canvas.width === 0 || canvas.height === 0) resizeCanvas();
 
                 if (isVideoActive) {
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    // 若當前縮放倍率 > 1，則進行數位繪製放大剪裁
+                    if (currentZoomLevel > 1.0) {
+                        const sw = video.videoWidth / currentZoomLevel;
+                        const sh = video.videoHeight / currentZoomLevel;
+                        const sx = (video.videoWidth - sw) / 2;
+                        const sy = (video.videoHeight - sh) / 2;
+                        ctx.drawImage(video, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
+                    } else {
+                        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    }
                 } else {
                     ctx.fillStyle = '#F4EFE6';
                     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -639,7 +743,6 @@
                 const crowding = parseFloat(paramCrowding.value) / 100;
 
                 const hasEffects = missing > 0 || jitter > 0 || swap > 0 || crowding > 0;
-                // 2秒動態間隔 (0.0015 * time 相當於 2秒完整週期)
                 const time = Date.now() * 0.0015;
 
                 if (currentMode === 'preset') {
@@ -657,7 +760,8 @@
 
             animationFrameId = requestAnimationFrame(renderLoop);
         }
-        // 經典範文繪製模式 (支援英文與古詩文置中及排版)
+
+        // 經典範文繪製模式
         function renderArticleOverlay(fullText, time, missing, jitter, swap, crowding) {
             const padding = Math.max(16, canvas.width * 0.04);
             const cardWidth = canvas.width - padding * 2;
@@ -814,13 +918,12 @@
             for (let i = 0; i < charCount; i++) {
                 const char = text[i];
                 const pseudoRandom = (Math.sin(secondSeed * 1000 + i * 37) + 1) / 2;
-                // 當 missing 或 swap 為 1 (100%) 時強制觸發全部文字
                 const isSwapTriggered = swap >= 1.0 || (swap > 0 && (pseudoRandom < swap));
                 const missingRandom = (Math.sin(secondSeed * 800 + i * 53) + 1) / 2;
-                const isMissingTriggered = missing >= 1.0 || (missing > 0 && (missingRandom < missing));
+                const isMissingTriggered = missing > 0 && (missingRandom < missing);
 
                 const hasRadical = !!radicalMap[char];
-                const isSplitNeeded = hasRadical && (isSwapTriggered || isMissingTriggered);
+                const isSplitNeeded = hasRadical && (isSwapTriggered || (isMissingTriggered && missing < 1.0));
 
                 splitStates.push(isSplitNeeded);
                 const width = isSplitNeeded ? fontSize * 1.35 : (ctx.measureText(char).width + baseSpacing);
@@ -846,7 +949,7 @@
                 const pseudoRandom = (Math.sin(secondSeed * 1000 + i * 37) + 1) / 2;
                 const isSwapTriggered = swap >= 1.0 || (swap > 0 && (pseudoRandom < swap));
                 const missingRandom = (Math.sin(secondSeed * 800 + i * 53) + 1) / 2;
-                const isMissingTriggered = missing >= 1.0 || (missing > 0 && (missingRandom < missing));
+                const isMissingTriggered = missing > 0 && (missingRandom < missing);
                 const styleRandom = (Math.cos(secondSeed * 500 + i * 19) + 1) / 2;
 
                 if (isSplitNeeded) {
@@ -856,8 +959,8 @@
                     ctx.font = `700 ${fontSize * 0.82}px 'Noto Serif TC', serif`;
 
                     const hideChoiceSeed = (Math.cos(secondSeed * 1200 + i * 67) + 1) / 2;
-                    const hideFirst = isMissingTriggered && (hideChoiceSeed < 0.5);
-                    const hideSecond = isMissingTriggered && (!hideFirst);
+                    const hideFirst = isMissingTriggered && (hideChoiceSeed < 0.5) && missing < 1.0;
+                    const hideSecond = isMissingTriggered && (!hideFirst) && missing < 1.0;
 
                     if (layoutType === 'vertical') {
                         const vertDistance = fontSize * 0.28;
@@ -897,17 +1000,18 @@
                     }
                     ctx.font = `700 ${fontSize}px 'Noto Serif TC', serif`;
                 } else {
-                    if (!isMissingTriggered) {
-                        ctx.save();
-                        ctx.translate(charX, charY);
-                        if (isSwapTriggered) {
-                            if (styleRandom < 0.5) ctx.scale(-1, 1);
-                            else ctx.scale(1, -1);
-                        }
-                        ctx.fillStyle = '#2C2621';
-                        ctx.fillText(char, 0, 0);
-                        ctx.restore();
+                    // 當沒有拆部首時，完全保留清晰繪製與正常透明度，不做任何淡化處理
+                    ctx.save();
+                    ctx.translate(charX, charY);
+                    if (isSwapTriggered) {
+                        if (styleRandom < 0.5) ctx.scale(-1, 1);
+                        else ctx.scale(1, -1);
                     }
+                    ctx.fillStyle = '#2C2621';
+                    ctx.globalAlpha = 1.0;
+
+                    ctx.fillText(char, 0, 0);
+                    ctx.restore();
                 }
                 startX += w;
             }
@@ -1011,21 +1115,27 @@
             renderArticleOverlay(rawInput, time, missing, jitter, swap, crowding);
         }
 
+        // 修改相機模式偵測文字的繪製邏輯：精準對應 0 (無效果) 到 100 (最強效)
         function renderOcrSpldOverlay(time, missing, jitter, swap, crowding) {
             if (!ocrResults || ocrResults.length === 0) return;
 
             ocrResults.forEach((wordObj, idx) => {
                 const { bbox, text } = wordObj;
-                if (!bbox || !text) return;
+                if (!bbox || !text || !text.trim()) return;
 
                 const width = bbox.x1 - bbox.x0;
                 const height = bbox.y1 - bbox.y0;
-                const fontPx = Math.max(16, height * 0.85);
-
+                
+                // 計算基礎文字大小
+                const baseFontSize = Math.max(16, height * 0.85);
                 const centerX = bbox.x0 + width / 2;
-                const centerY = bbox.y0 + height / 2;
+                const topY = bbox.y0 + (height - baseFontSize) / 2;
 
-                drawCenteredTextLine(text, centerX, centerY - fontPx * 0.5, fontPx, time + idx * 5, missing, jitter, swap, crowding);
+                // 視覺擁擠效果：0 為正常大小，100 為大幅壓迫/放大字體 spacing
+                const effectiveFontSize = baseFontSize * (1 + crowding * 0.4);
+
+                // 直接調用單行繪製邏輯
+                drawCenteredTextLine(text.trim(), centerX, topY, effectiveFontSize, time + idx * 5, missing, jitter, swap, crowding);
             });
         }
 
@@ -1055,9 +1165,9 @@
                 camControlsBar.classList.remove('hidden');
             }
 
-            // 相機模式開始值：筆劃缺失100、部首錯位100、字體漂浮0、視覺擁擠0
-            paramMissing.value = 100;
+            // 切換至相機模式時：部首錯位＝100；筆劃缺失、字體漂浮、視覺擁擠＝0
             paramSwap.value = 100;
+            paramMissing.value = 0;
             paramJitter.value = 0;
             paramCrowding.value = 0;
             updateValLabels();
@@ -1076,8 +1186,12 @@
             startOverlay.classList.add('hidden');
             camControlsBar.classList.add('hidden');
 
-            // 經典範文模式開始值：全部為 0 (正常)
-            setParamsValue(0);
+            // 經典範文模式開始參數：所有視覺強度皆預設為 0
+            paramSwap.value = 0;
+            paramMissing.value = 0;
+            paramJitter.value = 0;
+            paramCrowding.value = 0;
+            updateValLabels();
 
             resizeCanvas();
         };
@@ -1093,8 +1207,12 @@
             startOverlay.classList.add('hidden');
             camControlsBar.classList.add('hidden');
 
-            // 自訂文字模式開始值：全部為 0 (正常)
-            setParamsValue(0);
+            // 自訂文字模式開始參數：所有視覺強度皆預設為 0
+            paramSwap.value = 0;
+            paramMissing.value = 0;
+            paramJitter.value = 0;
+            paramCrowding.value = 0;
+            updateValLabels();
 
             resizeCanvas();
         };
@@ -1109,7 +1227,7 @@
         previewPresetBtn.onclick = () => tabModePreset.click();
         previewCustomBtn.onclick = () => tabModeText.click();
 
-        presetBtn1.onclick = () => customTextInput.value = "【高拆解率古詩】唐·李白《靜夜思》：床前明月光，疑是地上霜。舉頭望明月，低頭思故鄉。";
+        presetBtn1.onclick = () => customTextInput.value = "【高拆解率古詩】唐·李白《靜夜思》：床前明月光，疑是地上霜。";
         presetBtn2.onclick = () => customTextInput.value = "English Story: The Little Blue Dog: Once upon a time, a playful little blue dog named Toby loved to run in the green park with his friends.";
 
         toggleInfoBtn.onclick = () => infoModal.classList.remove('hidden');
@@ -1129,7 +1247,6 @@
             }
         };
 
-        // 滑桿數值變動監聽與顯示更新
         function updateValLabels() {
             valMissing.innerText = `${paramMissing.value}%`;
             valJitter.innerText = `${paramJitter.value}%`;
@@ -1142,7 +1259,6 @@
         paramSwap.oninput = updateValLabels;
         paramCrowding.oninput = updateValLabels;
 
-        // 拍攝對比圖邏輯
         captureBtn.onclick = () => {
             if (!video.videoWidth) return;
 
