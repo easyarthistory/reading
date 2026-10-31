@@ -958,8 +958,8 @@
                     ctx.font = `700 ${fontSize * 0.82}px 'Noto Serif TC', serif`;
 
                     const hideChoiceSeed = (Math.cos(secondSeed * 1200 + i * 67) + 1) / 2;
-                    const hideFirst = isMissingTriggered && (missing >= 1.0 || hideChoiceSeed < 0.5);
-                    const hideSecond = isMissingTriggered && (missing >= 1.0 || (missing > 0.8 ? hideChoiceSeed > 0.3 : !hideFirst));
+                    const hideFirst = isMissingTriggered && (missing >= 1.0 ? hideChoiceSeed < 0.8 : (hideChoiceSeed < 0.5 && missing < 1.0));
+                    const hideSecond = isMissingTriggered && (missing >= 1.0 ? (hideChoiceSeed >= 0.3) : (!hideFirst && missing < 1.0));
 
                     if (layoutType === 'vertical') {
                         const vertDistance = fontSize * 0.28;
