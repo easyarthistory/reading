@@ -47,6 +47,7 @@
             color: #4A4036;
         }
 
+        /* 溫和日系質感的毛玻璃卡片 */
         .muji-card {
             background: rgba(251, 249, 245, 0.92);
             backdrop-filter: blur(10px);
@@ -54,11 +55,13 @@
             box-shadow: 0 4px 20px -2px rgba(140, 116, 98, 0.08);
         }
 
+        /* 溫和日系自訂滑桿 - 加大觸控熱區 */
         input[type=range] {
             accent-color: #8C7462;
             touch-action: manipulation;
         }
 
+        /* 隱藏滾動條但保持功能 */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -70,7 +73,7 @@
 </head>
 <body class="min-h-screen flex flex-col bg-washi text-wood-800 overflow-x-hidden">
 
-    <!-- 頂部導覽列 -->
+    <!-- 頂部導覽列：日系極簡風格 -->
     <header class="w-full muji-card shrink-0 px-3 sm:px-5 py-2.5 border-b border-stoneborder flex justify-between items-center z-30 sticky top-0">
         <div class="flex items-center gap-2 sm:gap-3">
             <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-2xl bg-wood-700 text-washi flex items-center justify-center shadow-sm shrink-0">
@@ -85,6 +88,7 @@
             </div>
         </div>
 
+        <!-- 頂部按鈕 -->
         <div class="flex items-center gap-1.5 sm:gap-2">
             <button id="toggle-info-btn" class="bg-washi hover:bg-washidark text-wood-700 text-xs px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl border border-stoneborder transition flex items-center gap-1.5 shadow-sm active:scale-95">
                 <i class="fa-solid fa-book-open text-matcha-700"></i>
@@ -101,15 +105,21 @@
         </div>
     </header>
 
-    <!-- 主展示畫面區 -->
+    <!-- 主展示畫面區：滿版自動伸展 -->
     <main class="flex-1 relative flex flex-col items-center justify-start bg-washidark p-2 sm:p-4 md:p-6 w-full max-w-6xl mx-auto space-y-4">
         
-        <div id="canvas-container" class="w-full min-h-[380px] sm:min-h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden border border-stoneborder shadow-sm relative bg-washi flex items-center justify-center transition-all duration-300 cursor-crosshair">
+        <!-- 視訊與 Canvas 容器 -->
+        <div id="canvas-container" class="w-full min-h-[420px] sm:min-h-[500px] rounded-2xl sm:rounded-3xl overflow-hidden border border-stoneborder shadow-sm relative bg-washi flex items-center justify-center transition-all duration-300 cursor-crosshair">
+            <!-- 實時視訊 (僅在相機模式使用) -->
             <video id="webcam" autoplay playsinline muted class="hidden"></video>
+            
+            <!-- SpLD 渲染 Canvas -->
             <canvas id="spld-canvas" class="w-full h-full block"></canvas>
 
+            <!-- 點擊觸發對焦視覺效果波紋 -->
             <div id="focus-ring" class="absolute w-12 h-12 border-2 border-matcha-500 rounded-full pointer-events-none transition-all duration-300 opacity-0 transform -translate-x-1/2 -translate-y-1/2 scale-150 z-20"></div>
 
+            <!-- 相機進階控制工具列 (變焦放大/縮小與拍攝對比) -->
             <div id="cam-controls-bar" class="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 muji-card px-3.5 py-2 rounded-2xl border border-stoneborder flex items-center gap-3 hidden shadow-md">
                 <div class="flex items-center gap-2 text-xs font-medium text-wood-700">
                     <i class="fa-solid fa-magnifying-glass-plus text-wood-500"></i>
@@ -117,8 +127,12 @@
                     <input type="range" id="zoom-slider" min="1" max="3" step="0.1" value="1" class="w-24 sm:w-36 h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
                     <span id="zoom-val" class="font-mono text-[11px] w-6">1.0x</span>
                 </div>
+                <button id="capture-btn" class="bg-matcha-700 hover:bg-matcha-500 text-washi text-xs px-3 py-1.5 rounded-xl font-medium transition flex items-center gap-1.5 shadow-sm active:scale-95">
+                    <i class="fa-solid fa-camera"></i> 拍攝對比
+                </button>
             </div>
 
+            <!-- 頁面一專屬：開啟相機遮罩 -->
             <div id="start-overlay" class="absolute inset-0 bg-washi/95 z-20 flex flex-col items-center justify-center p-4 sm:p-6 text-center">
                 <div class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-wood-100 border border-stoneborder flex items-center justify-center text-wood-700 text-xl sm:text-3xl mb-3 sm:mb-4 shadow-sm">
                     <i class="fa-solid fa-camera text-wood-700"></i>
@@ -132,15 +146,18 @@
                 </button>
             </div>
 
+            <!-- 狀態提示 -->
             <div id="status-badge" class="absolute top-2.5 left-2.5 sm:top-4 sm:left-4 z-10 muji-card px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border border-stoneborder flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs hidden shadow-sm">
                 <span id="status-dot" class="w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-matcha-500 animate-pulse"></span>
                 <span id="status-text" class="text-wood-700 font-medium">相機運行中</span>
             </div>
         </div>
 
+        <!-- 底部互動控制面板 -->
         <div class="w-full z-20">
             <div id="controls-panel" class="muji-card rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-stoneborder transition-all duration-300">
                 
+                <!-- 3 大主頁籤切換與選單折疊 -->
                 <div class="flex items-center justify-between pb-2.5 mb-2.5 border-b border-stoneborder">
                     <div class="flex gap-1.5 sm:gap-2 text-xs font-bold overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
                         <button id="tab-mode-ocr" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-wood-700 text-washi transition shadow-sm text-[11px] sm:text-xs shrink-0">
@@ -153,18 +170,22 @@
                             <i class="fa-solid fa-pen-nib mr-1"></i>自訂文字體驗
                         </button>
                     </div>
+                    <button id="collapse-btn" class="text-wood-500 hover:text-wood-800 text-[11px] sm:text-xs px-2 py-1 shrink-0">
+                        <i class="fa-solid fa-chevron-down"></i> <span class="hidden sm:inline">收折選單</span>
+                    </button>
                 </div>
 
+                <!-- 頁面二內容：經典範文體驗 -->
                 <div id="preset-article-container" class="hidden mb-3">
-                    <label class="block text-[11px] sm:text-xs font-medium text-wood-700 mb-1">選擇經典古詩文 / 英文小故事：</label>
+                    <label class="block text-[11px] sm:text-xs font-medium text-wood-700 mb-1">選擇高分拆率經典古詩文 / 英文小故事：</label>
                     <div class="flex flex-col sm:flex-row gap-2">
                         <select id="preset-article-select" class="flex-1 bg-washi border border-stoneborder rounded-xl px-3 py-2 text-xs text-wood-800 focus:outline-none focus:border-wood-500 font-serif">
-                            <option value="【高拆解率古詩】唐·李白《靜夜思》：床前明月光，疑是地上霜。舉頭望明月，低頭思故鄉。">唐·李白《靜夜思》</option>
-                            <option value="【高拆解率古詩】唐·孟浩然《春曉》：春眠不覺曉，處處聞啼鳥。夜來風雨聲，花落知多少。">唐·孟浩然《春曉》</option>
-                            <option value="【高拆解率古詩】唐·王之渙《登鸛雀樓》：白日依山盡，黃河入海流。欲窮千里目，更上一層樓。">唐·王之渙《登鸛雀樓》</option>
-                            <option value="【高拆解率古詩】唐·王維《相思》：紅豆生南國，春來發幾枝。願君多採擷，此物最相思。">唐·王維《相思》</option>
-                            <option value="【高拆解率古詩】唐·孟郊《遊子吟》：慈母手中線，遊子身上衣。臨行密密縫，意恐遲遲歸。誰言寸草心，報得三春暉。">唐·孟郊《遊子吟》</option>
-                            <option value="【高拆解率古文】唐·劉禹錫《陋室銘》：山不在高，有仙則名。水不在深，有龍則靈。斯是陋室，惟吾德馨。苔痕上階綠，草色入簾青。">唐·劉禹錫《陋室銘》</option>
+                            <option value="【高拆解率古詩】唐·李白《靜夜思》：床前明月光，疑是地上霜。舉頭望明月，低頭思故鄉。">【高拆解率古詩】唐·李白《靜夜思》</option>
+                            <option value="【高拆解率古詩】唐·孟浩然《春曉》：春眠不覺曉，處處聞啼鳥。夜來風雨聲，花落知多少。">【高拆解率古詩】唐·孟浩然《春曉》</option>
+                            <option value="【高拆解率古詩】唐·王之渙《登鸛雀樓》：白日依山盡，黃河入海流。欲窮千里目，更上一層樓。">【高拆解率古詩】唐·王之渙《登鸛雀樓》</option>
+                            <option value="【高拆解率古詩】唐·王維《相思》：紅豆生南國，春來發幾枝。願君多採擷，此物最相思。">【高拆解率古詩】唐·王維《相思》</option>
+                            <option value="【高拆解率古詩】唐·孟郊《遊子吟》：慈母手中線，遊子身上衣。臨行密密縫，意恐遲遲歸。誰言寸草心，報得三春暉。">【高拆解率古詩】唐·孟郊《遊子吟》</option>
+                            <option value="【高拆解率古文】唐·劉禹錫《陋室銘》：山不在高，有仙則名。水不在深，有龍則靈。斯是陋室，惟吾德馨。苔痕上階綠，草色入簾青。">【高拆解率古文】唐·劉禹錫《陋室銘》</option>
                             <option value="English Story: The Little Blue Dog: Once upon a time, a playful little blue dog named Toby loved to run in the green park with his friends. Reading can feel confusing when letters like b, d, p, and q swirl around on the page.">【English】The Little Blue Dog</option>
                             <option value="English Story: A Rainy Day Adventure: Raindrops started falling gently on the window screen. Emma put on her yellow raincoat and red boots to jump in the big water puddles outside.">【English】A Rainy Day Adventure</option>
                         </select>
@@ -174,6 +195,7 @@
                     </div>
                 </div>
 
+                <!-- 頁面三內容：自訂文字體驗 -->
                 <div id="custom-text-input-container" class="hidden mb-3">
                     <label class="block text-[11px] sm:text-xs font-medium text-wood-700 mb-1">自訂任何文字體驗：</label>
                     <div class="flex flex-col sm:flex-row gap-2">
@@ -191,6 +213,8 @@
 
                 <!-- SpLD 視覺強度控制滑桿 -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 text-xs">
+                    
+                    <!-- 1. 缺筆劃 -->
                     <div class="bg-washi p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-stoneborder">
                         <div class="flex justify-between items-center mb-1">
                             <label class="font-bold text-wood-800 flex items-center gap-1 text-[11px] sm:text-xs">
@@ -201,16 +225,18 @@
                         <input type="range" id="param-missing" min="0" max="100" value="50" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
                     </div>
 
+                    <!-- 2. 字體跳動 -->
                     <div class="bg-washi p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-stoneborder">
                         <div class="flex justify-between items-center mb-1">
                             <label class="font-bold text-wood-800 flex items-center gap-1 text-[11px] sm:text-xs">
                                 <i class="fa-solid fa-water text-matcha-500"></i> 字體漂浮
                             </label>
-                            <span id="val-jitter" class="text-wood-500 font-mono text-[10px] sm:text-xs">0%</span>
+                            <span id="val-jitter" class="text-wood-500 font-mono text-[10px] sm:text-xs">50%</span>
                         </div>
-                        <input type="range" id="param-jitter" min="0" max="100" value="0" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="param-jitter" min="0" max="100" value="50" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
                     </div>
 
+                    <!-- 3. 部首鏡像/錯位 -->
                     <div class="bg-washi p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-stoneborder">
                         <div class="flex justify-between items-center mb-1">
                             <label class="font-bold text-wood-800 flex items-center gap-1 text-[11px] sm:text-xs">
@@ -221,15 +247,17 @@
                         <input type="range" id="param-swap" min="0" max="100" value="50" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
                     </div>
 
+                    <!-- 4. 行距壓迫 -->
                     <div class="bg-washi p-2.5 sm:p-3 rounded-xl sm:rounded-2xl border border-stoneborder">
                         <div class="flex justify-between items-center mb-1">
                             <label class="font-bold text-wood-800 flex items-center gap-1 text-[11px] sm:text-xs">
                                 <i class="fa-solid fa-compress text-matcha-500"></i> 視覺擁擠
                             </label>
-                            <span id="val-crowding" class="text-wood-500 font-mono text-[10px] sm:text-xs">0%</span>
+                            <span id="val-crowding" class="text-wood-500 font-mono text-[10px] sm:text-xs">50%</span>
                         </div>
-                        <input type="range" id="param-crowding" min="0" max="100" value="0" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
+                        <input type="range" id="param-crowding" min="0" max="100" value="50" class="w-full h-1.5 bg-wood-100 rounded-lg appearance-none cursor-pointer">
                     </div>
+
                 </div>
 
             </div>
@@ -237,43 +265,96 @@
 
     </main>
 
+    <!-- 頁尾宣告標誌 -->
     <footer class="w-full text-center py-2 px-3 bg-washi border-t border-stoneborder shrink-0 z-30">
         <p class="text-[10px] sm:text-xs text-wood-500 tracking-wide font-medium">
             — M. Hea Limited ｜讀寫孩子眼中的世界｜網頁由 Google Gemini 製作 —
         </p>
     </footer>
 
-    <!-- SpLD 說明 Modal -->
+    <!-- SpLD 家長與教師教育說明 Modal (日系卡片版面) -->
     <div id="info-modal" class="fixed inset-0 bg-wood-800/30 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
         <div class="muji-card max-w-xl w-full rounded-3xl p-6 md:p-8 border border-stoneborder shadow-xl relative max-h-[85vh] overflow-y-auto no-scrollbar">
             <button id="close-modal-btn" class="absolute top-5 right-5 text-wood-500 hover:text-wood-800 text-lg w-8 h-8 rounded-full bg-washidark flex items-center justify-center">
                 <i class="fa-solid fa-xmark"></i>
             </button>
+            
             <div class="flex items-center gap-2.5 mb-4">
                 <div class="w-8 h-8 rounded-xl bg-matcha-100 text-matcha-700 flex items-center justify-center">
                     <i class="fa-solid fa-heart text-sm"></i>
                 </div>
                 <h3 class="text-lg font-bold text-wood-800">SpLD 讀寫障礙陪伴解說</h3>
             </div>
+
             <div class="space-y-3.5 text-xs md:text-sm text-wood-700 leading-relaxed">
                 <div class="bg-washi p-4 rounded-2xl border border-stoneborder">
                     <h4 class="font-bold text-wood-800 mb-1 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-wood-500"></span> 1. 筆劃缺失
+                        <span class="w-2 h-2 rounded-full bg-wood-500"></span> 1. 筆劃缺失（Missing Strokes）
                     </h4>
-                    <p class="text-wood-500 text-xs">大腦解析漢字時容易隨機遺漏左右或上下偏旁筆劃，導致閱讀困難。</p>
+                    <p class="text-wood-500 text-xs">讀寫障礙學童大腦在視覺解析漢字時，對複雜筆劃的空間感較薄弱，容易在視覺上漏掉橫、點、豎，導致閱讀或抄寫時漏筆劃。</p>
                 </div>
+
                 <div class="bg-washi p-4 rounded-2xl border border-stoneborder">
                     <h4 class="font-bold text-wood-800 mb-1 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-matcha-500"></span> 2. 字體漂浮跳動
+                        <span class="w-2 h-2 rounded-full bg-matcha-500"></span> 2. 字體漂浮跳動（Visual Stress）
                     </h4>
-                    <p class="text-wood-500 text-xs">印刷黑字容易出現扭曲、旋轉或浮動感。</p>
+                    <p class="text-wood-500 text-xs">大腦無視覺抑制機制時，白紙上的印刷黑字容易出現扭曲、旋轉或浮動感，導致學童閱讀速度慢且易視覺疲勞。</p>
+                </div>
+
+                <div class="bg-washi p-4 rounded-2xl border border-stoneborder">
+                    <h4 class="font-bold text-wood-800 mb-1 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-wood-700"></span> 3. 部首錯位與字母顛倒
+                    </h4>
+                    <p class="text-wood-500 text-xs">學童的空間定位功能尚在發展，容易將漢字左右偏旁（如「陪」與「部」）倒置，或把英文 `b` 認成 `d`。</p>
+                </div>
+
+                <div class="p-4 bg-matcha-100 border border-matcha-500/20 rounded-2xl text-matcha-700 text-xs">
+                    <i class="fa-solid fa-seedling mr-1"></i> <strong>陪伴小貼士：</strong> 使用較大的字體、加大行距，或搭配暖黃色/淺綠色閱讀遮罩，能有效減緩孩子閱讀時的視覺壓力。
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- 拍攝前後對比 Modal -->
+    <div id="compare-modal" class="fixed inset-0 bg-wood-800/40 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-6 hidden">
+        <div class="muji-card max-w-4xl w-full rounded-3xl p-4 sm:p-6 border border-stoneborder shadow-2xl relative flex flex-col max-h-[90vh]">
+            <div class="flex items-center justify-between pb-3 border-b border-stoneborder mb-4">
+                <h3 class="text-base sm:text-lg font-bold text-wood-800 flex items-center gap-2">
+                    <i class="fa-solid fa-images text-matcha-700"></i> 實時拍攝對比 (Before / After)
+                </h3>
+                <button id="close-compare-btn" class="text-wood-500 hover:text-wood-800 text-lg w-8 h-8 rounded-full bg-washidark flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 overflow-y-auto mb-4">
+                <div class="flex flex-col items-center bg-washi p-3 rounded-2xl border border-stoneborder">
+                    <span class="text-xs font-bold text-wood-700 mb-2 bg-wood-100 px-3 py-1 rounded-full">原圖片 (真實畫面)</span>
+                    <div class="w-full rounded-xl overflow-hidden bg-black flex items-center justify-center relative aspect-video">
+                        <img id="compare-original-img" class="w-full h-full object-contain" alt="Original Image">
+                    </div>
+                </div>
+                <div class="flex flex-col items-center bg-washi p-3 rounded-2xl border border-stoneborder">
+                    <span class="text-xs font-bold text-matcha-700 mb-2 bg-matcha-100 px-3 py-1 rounded-full">SpLD 視覺模擬效果圖</span>
+                    <div class="w-full rounded-xl overflow-hidden bg-black flex items-center justify-center relative aspect-video">
+                        <img id="compare-spld-img" class="w-full h-full object-contain" alt="SpLD Effect Image">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-2 border-t border-stoneborder">
+                <button id="retake-btn" class="bg-washi hover:bg-washidark text-wood-700 text-xs px-5 py-2.5 rounded-xl border border-stoneborder font-medium transition flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i> 重新拍攝
+                </button>
+                <button id="save-compare-btn" class="bg-wood-700 hover:bg-wood-800 text-washi text-xs px-5 py-2.5 rounded-xl font-medium transition flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-download"></i> 下載對比圖
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // DOM 引用
+        // DOM 元素引用
         const video = document.getElementById('webcam');
         const canvas = document.getElementById('spld-canvas');
         const ctx = canvas.getContext('2d');
@@ -285,13 +366,25 @@
         const statusBadge = document.getElementById('status-badge');
         const statusText = document.getElementById('status-text');
         
+        // 相機變焦與對焦控制 DOM
         const camControlsBar = document.getElementById('cam-controls-bar');
         const zoomSlider = document.getElementById('zoom-slider');
         const zoomVal = document.getElementById('zoom-val');
+        const captureBtn = document.getElementById('capture-btn');
+
+        // 拍攝對比 Modal DOM
+        const compareModal = document.getElementById('compare-modal');
+        const closeCompareBtn = document.getElementById('close-compare-btn');
+        const retakeBtn = document.getElementById('retake-btn');
+        const saveCompareBtn = document.getElementById('save-compare-btn');
+        const compareOriginalImg = document.getElementById('compare-original-img');
+        const compareSpldImg = document.getElementById('compare-spld-img');
 
         const tabModeOcr = document.getElementById('tab-mode-ocr');
         const tabModePreset = document.getElementById('tab-mode-preset');
         const tabModeText = document.getElementById('tab-mode-text');
+        const collapseBtn = document.getElementById('collapse-btn');
+        const controlsPanel = document.getElementById('controls-panel');
         
         const presetArticleContainer = document.getElementById('preset-article-container');
         const presetArticleSelect = document.getElementById('preset-article-select');
@@ -318,7 +411,7 @@
         const infoModal = document.getElementById('info-modal');
         const closeModalBtn = document.getElementById('close-modal-btn');
 
-        // 狀態變數
+        // 全局狀態
         let currentStream = null;
         let videoTrack = null;
         let currentMode = 'ocr';
@@ -327,168 +420,86 @@
         let ocrResults = [];
         let isOcrProcessing = false;
         let animationFrameId = null;
-        let lastFocusPoint = null;
 
-        // 常見拆解字字典 (左右結構 / 上下結構)
-        const decomposableChars = {
-            '明': { type: 'lr', p1: '日', p2: '月' },
-            '休': { type: 'lr', p1: '亻', p2: '木' },
-            '林': { type: 'lr', p1: '木', p2: '木' },
-            '相': { type: 'lr', p1: '木', p2: '目' },
-            '靜': { type: 'lr', p1: '青', p2: '爭' },
-            '頭': { type: 'lr', p1: '豆', p2: '頁' },
-            '故': { type: 'lr', p1: '古', p2: '攵' },
-            '聽': { type: 'lr', p1: '耳', p2: '德' },
-            '曉': { type: 'lr', p1: '日', p2: '堯' },
-            '處': { type: 'lr', p1: '虍', p2: '夂' },
-            '流': { type: 'lr', p1: '氵', p2: '㐬' },
-            '樓': { type: 'lr', p1: '木', p2: '婁' },
-            '枝': { type: 'lr', p1: '木', p2: '支' },
-            '採': { type: 'lr', p1: '扌', p2: '采' },
-            '縫': { type: 'lr', p1: '纟', p2: '逢' },
-            '李': { type: 'tb', p1: '木', p2: '子' },
-            '思': { type: 'tb', p1: '田', p2: '心' },
-            '舉': { type: 'tb', p1: '興', p2: '手' },
-            '春': { type: 'tb', p1: '𡗗', p2: '日' },
-            '落': { type: 'tb', p1: '艹', p2: '洛' },
-            '意': { type: 'tb', p1: '音', p2: '心' },
-            '恐': { type: 'tb', p1: '巩', p2: '心' },
-            '暉': { type: 'lr', p1: '日', p2: '軍' }
-            '休': { type: 'lr', p1: '人', p2: '木' },
-            '林': { type: 'lr', p1: '木', p2: '木' },
-            '鮮': { type: 'lr', p1: '魚', p2: '羊' },
-            '和': { type: 'lr', p1: '禾', p2: '口' },
-            '語': { type: 'lr', p1: '言', p2: '吾' },
-            '晴': { type: 'lr', p1: '日', p2: '青' },
-            '暗': { type: 'lr', p1: '日', p2: '音' },
-            '暖': { type: 'lr', p1: '日', p2: '爰' },
-            '解': { type: 'lr', p1: '角', p2: '刀牛' },
-            '張': { type: 'lr', p1: '弓', p2: '長' },
-            '清': { type: 'lr', p1: '氵', p2: '青' },
-            '河': { type: 'lr', p1: '氵', p2: '可' },
-            '海': { type: 'lr', p1: '氵', p2: '每' },
-            '江': { type: 'lr', p1: '氵', p2: '工' },
-            '湖': { type: 'lr', p1: '氵', p2: '胡' },
-            '流': { type: 'lr', p1: '氵', p2: '㐬' },
-            '深': { type: 'lr', p1: '氵', p2: '罙' },
-            '波': { type: 'lr', p1: '氵', p2: '皮' },
-            '紅': { type: 'lr', p1: '糸', p2: '工' },
-            '細': { type: 'lr', p1: '糸', p2: '田' },
-            '綠': { type: 'lr', p1: '糸', p2: '彔' },
-            '線': { type: 'lr', p1: '糸', p2: '泉' },
-            '給': { type: 'lr', p1: '糸', p2: '合' },
-            '結': { type: 'lr', p1: '糸', p2: '吉' },
-            '極': { type: 'lr', p1: '木', p2: '亟' },
-            '校': { type: 'lr', p1: '木', p2: '交' },
-            '村': { type: 'lr', p1: '木', p2: '寸' },
-            '枝': { type: 'lr', p1: '木', p2: '支' },
-            '地': { type: 'lr', p1: '土', p2: '也' },
-            '城': { type: 'lr', p1: '土', p2: '成' },
-            '場': { type: 'lr', p1: '土', p2: '昜' },
-            '境': { type: 'lr', p1: '土', p2: '竟' },
-            '時': { type: 'lr', p1: '日', p2: '寺' },
-            '晚': { type: 'lr', p1: '日', p2: '免' },
-            '映': { type: 'lr', p1: '日', p2: '央' },
-            '旺': { type: 'lr', p1: '日', p2: '王' },
-            '昭': { type: 'lr', p1: '日', p2: '召' },
-            '睡': { type: 'lr', p1: '目', p2: '垂' },
-            '眼': { type: 'lr', p1: '目', p2: '艮' },
-            '睛': { type: 'lr', p1: '目', p2: '青' },
-            '睇': { type: 'lr', p1: '目', p2: '弟' },
-            '神': { type: 'lr', p1: '礻', p2: '申' },
-            '祠': { type: 'lr', p1: '礻', p2: '司' },
-            '祥': { type: 'lr', p1: '礻', p2: '羊' },
-            '福': { type: 'lr', p1: '礻', p2: '畐' },
-            '禮': { type: 'lr', p1: '礻', p2: '豐' },
-            '祝': { type: 'lr', p1: '礻', p2: '兄' },
-            '補': { type: 'lr', p1: '衤', p2: '甫' },
-            '衫': { type: 'lr', p1: '衤', p2: '彡' },
-            '初': { type: 'lr', p1: '衤', p2: '刀' },
-            '袖': { type: 'lr', p1: '衤', p2: '由' },
-            '褲': { type: 'lr', p1: '衤', p2: '庫' },
-            '話': { type: 'lr', p1: '言', p2: '舌' },
-            '説': { type: 'lr', p1: '言', p2: '兌' },
-            '記': { type: 'lr', p1: '言', p2: '己' },
-            '許': { type: 'lr', p1: '言', p2: '午' },
-            '謝': { type: 'lr', p1: '言', p2: '射' },
-            '識': { type: 'lr', p1: '言', p2: '戠' },
-            '讀': { type: 'lr', p1: '言', p2: '賣' },
-            '詩': { type: 'lr', p1: '言', p2: '寺' },
-            '誠': { type: 'lr', p1: '言', p2: '成' },
-            '信': { type: 'lr', p1: '人', p2: '言' },
-            '他': { type: 'lr', p1: '人', p2: '也' },
-            '你': { type: 'lr', p1: '人', p2: '爾' },
-            '做': { type: 'lr', p1: '人', p2: '故' },
-            '位': { type: 'lr', p1: '人', p2: '立' },
-            '住': { type: 'lr', p1: '人', p2: '主' },
-            '作': { type: 'lr', p1: '人', p2: '乍' },
-            '保': { type: 'lr', p1: '人', p2: '呆' },
-            '健': { type: 'lr', p1: '人', p2: '建' },
-            '偉': { type: 'lr', p1: '人', p2: '韋' },
-            '傳': { type: 'lr', p1: '人', p2: '專' },
-            '銀': { type: 'lr', p1: '金', p2: '艮' },
-            '鐵': { type: 'lr', p1: '金', p2: '𢧋' },
-            '銅': { type: 'lr', p1: '金', p2: '同' },
-            '鐘': { type: 'lr', p1: '金', p2: '童' },
-            '鏡': { type: 'lr', p1: '金', p2: '竟' },
-            '針': { type: 'lr', p1: '金', p2: '十' },
-            '錢': { type: 'lr', p1: '金', p2: '戔' },
-            '鎖': { type: 'lr', p1: '金', p2: '𧵁' },
-            '玩': { type: 'lr', p1: '王', p2: '元' },
-            '球': { type: 'lr', p1: '王', p2: '求' },
-            '理': { type: 'lr', p1: '王', p2: '里' },
-            '環': { type: 'lr', p1: '王', p2: '瞏' },
-            '珍': { type: 'lr', p1: '王', p2: '㐱' },
-            '珠': { type: 'lr', p1: '王', p2: '朱' },
-            '班': { type: 'lr', p1: '王', p2: '刀王' },
-            '現': { type: 'lr', p1: '王', p2: '見' },
-            '吃': { type: 'lr', p1: '口', p2: '乞' },
-            '吹': { type: 'lr', p1: '口', p2: '欠' },
-            '喊': { type: 'lr', p1: '口', p2: '咸' },
-            '味': { type: 'lr', p1: '口', p2: '未' },
-            '唱': { type: 'lr', p1: '口', p2: '昌' },
-            '叫': { type: 'lr', p1: '口', p2: '丩' },
-            '吐': { type: 'lr', p1: '口', p2: '土' },
-            '吸': { type: 'lr', p1: '口', p2: '及' }
-            '好': { type: 'lr', p1: '女', p2: '子' }
-            '啱': { type: 'lr', p1: '口', p2: '岩' }
-        };
-
-        // 初始化相機控制 capabilities
-        async function initCameraCapabilities() {
-            if (!videoTrack) return;
+        // 啟動攝影機與相機硬體功能控制
+        async function startCamera() {
             try {
-                const capabilities = videoTrack.getCapabilities ? videoTrack.getCapabilities() : {};
-                if (capabilities.zoom) {
-                    zoomSlider.min = capabilities.zoom.min || 1;
-                    zoomSlider.max = capabilities.zoom.max || 3;
-                    zoomSlider.step = capabilities.zoom.step || 0.1;
-                    zoomSlider.value = videoTrack.getSettings().zoom || 1;
-                    zoomVal.innerText = `${parseFloat(zoomSlider.value).toFixed(1)}x`;
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
                 }
+
+                statusText.innerText = '正在連結鏡頭...';
+                
+                const constraints = {
+                    video: {
+                        facingMode: { ideal: facingMode },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    },
+                    audio: false
+                };
+
+                try {
+                    currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (err) {
+                    console.warn("無法取得指定鏡頭，降級使用預設相機:", err);
+                    currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                }
+
+                video.srcObject = currentStream;
+                videoTrack = currentStream.getVideoTracks()[0];
+
+                video.onloadedmetadata = () => {
+                    video.play();
+                    startOverlay.classList.add('hidden');
+                    statusBadge.classList.remove('hidden');
+                    stopCamBtn.classList.remove('hidden');
+                    switchCamBtn.classList.remove('hidden');
+                    camControlsBar.classList.remove('hidden');
+                    statusText.innerText = '相機運行中';
+                    
+                    initCameraCapabilities();
+                    resizeCanvas();
+                    if (!animationFrameId) renderLoop();
+                    setInterval(processOCR, 1200);
+                };
             } catch (err) {
-                console.log("硬體變焦不支援", err);
+                alert('無法讀取相機。請確認已授予相機存取權限。');
+                console.error(err);
+            }
+        }
+
+        function initCameraCapabilities() {
+            if (!videoTrack || !videoTrack.getCapabilities) return;
+            const capabilities = videoTrack.getCapabilities();
+            
+            if (capabilities.zoom) {
+                zoomSlider.min = capabilities.zoom.min || 1;
+                zoomSlider.max = Math.min(capabilities.zoom.max || 3, 5);
+                zoomSlider.step = capabilities.zoom.step || 0.1;
+                zoomSlider.value = 1;
+                zoomVal.innerText = '1.0x';
             }
         }
 
         zoomSlider.oninput = async () => {
-            const zoomLevel = parseFloat(zoomSlider.value);
-            zoomVal.innerText = `${zoomLevel.toFixed(1)}x`;
+            const zoomValue = parseFloat(zoomSlider.value);
+            zoomVal.innerText = `${zoomValue.toFixed(1)}x`;
             if (videoTrack && videoTrack.applyConstraints) {
                 try {
-                    await videoTrack.applyConstraints({ advanced: [{ zoom: zoomLevel }] });
-                } catch (e) {}
+                    await videoTrack.applyConstraints({ advanced: [{ zoom: zoomValue }] });
+                } catch (e) {
+                    console.warn("變焦調整不受支援:", e);
+                }
             }
         };
 
-        // Canvas 點擊觸發對焦
-        canvas.onclick = async (e) => {
-            if (currentMode !== 'ocr') return;
-            const rect = canvas.getBoundingClientRect();
+        canvasContainer.onclick = async (e) => {
+            if (currentMode !== 'ocr' || !videoTrack) return;
+
+            const rect = canvasContainer.getBoundingClientRect();
             const clickX = e.clientX - rect.left;
             const clickY = e.clientY - rect.top;
-
-            lastFocusPoint = { x: clickX, y: clickY, time: Date.now() };
 
             focusRing.style.left = `${clickX}px`;
             focusRing.style.top = `${clickY}px`;
@@ -500,53 +511,18 @@
                 focusRing.classList.add('opacity-0', 'scale-150');
             }, 600);
 
-            if (videoTrack && videoTrack.applyConstraints) {
+            if (videoTrack.applyConstraints) {
                 try {
                     const capabilities = videoTrack.getCapabilities ? videoTrack.getCapabilities() : {};
-                    if (capabilities.focusMode && capabilities.focusMode.includes('single-shot')) {
-                        await videoTrack.applyConstraints({ advanced: [{ focusMode: 'single-shot' }] });
+                    if (capabilities.focusMode) {
+                        const focusMode = capabilities.focusMode.includes('single-shot') ? 'single-shot' : 'continuous';
+                        await videoTrack.applyConstraints({ advanced: [{ focusMode }] });
                     }
-                } catch (err) {}
-            }
-            processOCR(true);
-        };
-
-        // 相機啟動
-        async function startCamera() {
-            try {
-                if (currentStream) {
-                    currentStream.getTracks().forEach(track => track.stop());
+                } catch (err) {
+                    console.warn("自動對焦不受支援或已被系統處理:", err);
                 }
-                const constraints = {
-                    video: {
-                        facingMode: facingMode,
-                        width: { ideal: 1280 },
-                        height: { ideal: 720 }
-                    }
-                };
-                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-                video.srcObject = currentStream;
-                videoTrack = currentStream.getVideoTracks()[0];
-                
-                await new Promise((resolve) => {
-                    video.onloadedmetadata = () => resolve();
-                });
-
-                startOverlay.classList.add('hidden');
-                statusBadge.classList.remove('hidden');
-                camControlsBar.classList.remove('hidden');
-                stopCamBtn.classList.remove('hidden');
-                switchCamBtn.classList.remove('hidden');
-
-                initCameraCapabilities();
-                resizeCanvas();
-                initTesseract();
-                requestAnimationFrame(renderLoop);
-
-            } catch (err) {
-                alert('無法存取相機，請確認您已授予瀏覽器相機使用權限。');
             }
-        }
+        };
 
         function stopCamera() {
             if (currentStream) {
@@ -554,410 +530,592 @@
                 currentStream = null;
                 videoTrack = null;
             }
-            startOverlay.classList.remove('hidden');
-            statusBadge.classList.add('hidden');
-            camControlsBar.classList.add('hidden');
+            video.pause();
+            video.srcObject = null;
+            
             stopCamBtn.classList.add('hidden');
             switchCamBtn.classList.add('hidden');
-        }
-
-        // Tesseract 初始化與前處理
-        async function initTesseract() {
-            if (!worker) {
-                statusText.innerText = "正在載入 OCR 引擎...";
-                worker = await Tesseract.createWorker('chi_tra+eng');
-                await worker.setParameters({
-                    tessedit_pageseg_mode: Tesseract.PSM.AUTO,
-                });
-                statusText.innerText = "相機辨識中";
-            }
-        }
-
-        async function processOCR(forceRegion = false) {
-            if (!worker || isOcrProcessing || currentMode !== 'ocr' || !video.videoWidth) return;
-            isOcrProcessing = true;
-
-            try {
-                const tempCanvas = document.createElement('canvas');
-                const tempCtx = tempCanvas.getContext('2d');
-                tempCanvas.width = video.videoWidth;
-                tempCanvas.height = video.videoHeight;
-                tempCtx.drawImage(video, 0, 0);
-
-                // 自適應二值化強化前處理
-                const imgData = tempCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-                const data = imgData.data;
-                for (let i = 0; i < data.length; i += 4) {
-                    const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                    const v = avg < 110 ? 0 : 255;
-                    data[i] = v; data[i + 1] = v; data[i + 2] = v;
-                }
-                tempCtx.putImageData(imgData, 0, 0);
-
-                const ret = await worker.recognize(tempCanvas);
-                if (ret && ret.data && ret.data.words) {
-                    ocrResults = ret.data.words.filter(w => w.confidence > 40);
-                }
-            } catch (err) {
-                console.log("OCR Error:", err);
-            } finally {
-                isOcrProcessing = false;
+            camControlsBar.classList.add('hidden');
+            statusBadge.classList.add('hidden');
+            if (currentMode === 'ocr') {
+                startOverlay.classList.remove('hidden');
             }
         }
 
         function resizeCanvas() {
             const rect = canvasContainer.getBoundingClientRect();
-            canvas.width = rect.width;
-            canvas.height = rect.height;
+            if (currentMode === 'preset' || currentMode === 'sandbox') {
+                const minHeight = Math.max(480, window.innerHeight * 0.55);
+                canvasContainer.style.height = `${minHeight}px`;
+                canvas.width = rect.width;
+                canvas.height = minHeight;
+            } else {
+                canvasContainer.style.height = 'auto';
+                canvas.width = rect.width;
+                canvas.height = rect.height || 450;
+            }
         }
 
         window.addEventListener('resize', resizeCanvas);
 
-        // 主渲染循環
-        function renderLoop() {
-            if (currentMode === 'ocr') {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-                    renderSpLDOverlayOnCamera();
+        async function processOCR() {
+            if (currentMode !== 'ocr' || isOcrProcessing || !video.srcObject || video.paused) return;
+
+            isOcrProcessing = true;
+            statusText.innerText = '正在偵測中英文文字...';
+
+            try {
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = canvas.width;
+                tempCanvas.height = canvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.drawImage(video, 0, 0, tempCanvas.width, tempCanvas.height);
+
+                if (!worker) worker = await Tesseract.createWorker('chi_tra+eng');
+
+                const { data } = await worker.recognize(tempCanvas);
+                if (data && data.words) {
+                    ocrResults = data.words.filter(w => w.text.trim().length > 0 && w.confidence > 35);
                 }
-                if (!isOcrProcessing && Math.random() < 0.1) {
-                    processOCR();
-                }
-                animationFrameId = requestAnimationFrame(renderLoop);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                isOcrProcessing = false;
+                statusText.innerText = `已辨識 ${ocrResults.length} 個字詞區塊`;
             }
         }
 
-        // 相機模式下 SpLD 視覺效果套用
-        function renderSpLDOverlayOnCamera() {
-            const missing = parseInt(paramMissing.value) / 100;
-            const jitter = parseInt(paramJitter.value) / 100;
-            const swap = parseInt(paramSwap.value) / 100;
+        function renderLoop() {
+            const isVideoActive = currentMode === 'ocr' && video.readyState === video.HAVE_ENOUGH_DATA && !video.paused;
+            const isNoCameraMode = currentMode === 'preset' || currentMode === 'sandbox';
 
-            const scaleX = canvas.width / (video.videoWidth || 1);
-            const scaleY = canvas.height / (video.videoHeight || 1);
+            if (isVideoActive || isNoCameraMode) {
+                if (canvas.width === 0 || canvas.height === 0) resizeCanvas();
 
-            const nowSec = Math.floor(Date.now() / 1000);
-
-            ocrResults.forEach((word) => {
-                const bbox = word.bbox;
-                const x = bbox.x0 * scaleX;
-                const y = bbox.y0 * scaleY;
-                const w = (bbox.x1 - bbox.x0) * scaleX;
-                const h = (bbox.y1 - bbox.y0) * scaleY;
-
-                const text = word.text.trim();
-                if (!text) return;
-
-                ctx.save();
-
-                // 飄浮 Jitter
-                let offsetX = 0, offsetY = 0;
-                if (jitter > 0) {
-                    offsetX = Math.sin(Date.now() / 200 + x) * (jitter * 12);
-                    offsetY = Math.cos(Date.now() / 200 + y) * (jitter * 12);
+                if (isVideoActive) {
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                } else {
+                    ctx.fillStyle = '#F4EFE6';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
                 }
 
-                ctx.translate(x + w / 2 + offsetX, y + h / 2 + offsetY);
+                const missing = parseFloat(paramMissing.value) / 100;
+                const jitter = parseFloat(paramJitter.value) / 100;
+                const swap = parseFloat(paramSwap.value) / 100;
+                const crowding = parseFloat(paramCrowding.value) / 100;
 
-                const fontSize = Math.max(16, h * 0.8);
-                ctx.font = `${fontSize}px "Noto Serif TC", serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillStyle = '#1A1A1A';
+                const hasEffects = missing > 0 || jitter > 0 || swap > 0 || crowding > 0;
+                const time = Date.now() * 0.003;
 
-                // 針對文字逐字繪製並解析偏旁結構
-                for (let i = 0; i < text.length; i++) {
-                    const char = text[i];
-                    const decomp = decomposableChars[char];
+                if (currentMode === 'preset') {
+                    const presetText = presetArticleSelect.value;
+                    renderArticleOverlay(presetText, time, missing, jitter, swap, crowding);
+                } else if (currentMode === 'sandbox') {
+                    renderCustomTextOverlay(time, missing, jitter, swap, crowding);
+                } else if (currentMode === 'ocr' && hasEffects) {
+                    renderOcrSpldOverlay(time, missing, jitter, swap, crowding);
+                }
+            } else if (currentMode === 'ocr' && !isVideoActive) {
+                ctx.fillStyle = '#F4EFE6';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
 
-                    // 筆劃缺失獨立隨機判斷 (不與錯位綁定)
-                    const isMissingHide = Math.random() < missing;
-                    const hideSide = (nowSec + char.charCodeAt(0)) % 2 === 0 ? 'p1' : 'p2';
+            animationFrameId = requestAnimationFrame(renderLoop);
+        }
 
-                    if (decomp) {
-                        const isSwapped = Math.random() < swap;
-                        const first = isSwapped ? decomp.p2 : decomp.p1;
-                        const second = isSwapped ? decomp.p1 : decomp.p2;
+        function renderArticleOverlay(fullText, time, missing, jitter, swap, crowding) {
+            const padding = Math.max(16, canvas.width * 0.04);
+            const cardWidth = canvas.width - padding * 2;
+            const cardHeight = canvas.height - padding * 2;
 
-                        if (decomp.type === 'lr') {
+            ctx.fillStyle = '#FBF9F5';
+            ctx.beginPath();
+            ctx.roundRect(padding, padding, cardWidth, cardHeight, 20);
+            ctx.fill();
+            ctx.strokeStyle = '#E6E1DA';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            let title = "";
+            let author = "";
+            let bodyText = fullText;
+            let isEnglish = false;
+
+            if (fullText.startsWith("English Story:")) {
+                isEnglish = true;
+                const parts = fullText.split(":");
+                title = parts[1].trim();
+                bodyText = parts.slice(2).join(":").trim();
+            } else if (fullText.includes("：")) {
+                const parts = fullText.split("：");
+                const header = parts[0];
+                bodyText = parts.slice(1).join("：");
+
+                const titleMatch = header.match(/《(.*?)》/);
+                title = titleMatch ? titleMatch[1] : header.replace(/【.*?】/, '').trim();
+
+                const authorMatch = header.match(/】(.*?)《/);
+                if (authorMatch) {
+                    let rawAuthor = authorMatch[1].trim();
+                    if (rawAuthor.includes("·")) {
+                        const [dynasty, name] = rawAuthor.split("·");
+                        author = `[${dynasty}] ${name}`;
+                    } else {
+                        author = rawAuthor;
+                    }
+                }
+            } else {
+                title = "靜夜思";
+                author = "[唐] 李白";
+            }
+
+            const centerX = canvas.width / 2;
+            let curY = padding + Math.max(36, canvas.height * 0.08);
+
+            if (title) {
+                const titleFontSize = Math.max(18, Math.min(28, canvas.width * 0.045));
+                if (isEnglish) {
+                    drawCenteredEnglishTitle(title, centerX, curY, titleFontSize, time, missing, jitter, swap, crowding);
+                } else {
+                    drawCenteredTextLine(title, centerX, curY, titleFontSize, time, missing, jitter, swap, crowding);
+                }
+                curY += titleFontSize * 1.8;
+            }
+
+            if (author && !isEnglish) {
+                const authorFontSize = Math.max(12, Math.min(16, canvas.width * 0.025));
+                drawCenteredTextLine(author, centerX, curY, authorFontSize, time + 8, missing, jitter, swap, crowding);
+                curY += authorFontSize * 2.0;
+            }
+
+            if (isEnglish) {
+                const textMarginLeft = padding + Math.max(16, cardWidth * 0.06);
+                const maxLineWidth = cardWidth - (Math.max(16, cardWidth * 0.06) * 2);
+
+                let fontSize = Math.max(13, Math.min(18, canvas.width * 0.028));
+                ctx.font = `700 ${fontSize}px 'Zen Maru Gothic', sans-serif`;
+
+                const words = bodyText.split(' ');
+                let lines = [];
+                let currentLine = '';
+
+                words.forEach(word => {
+                    const testLine = currentLine ? currentLine + ' ' + word : word;
+                    const metrics = ctx.measureText(testLine).width;
+                    if (metrics > maxLineWidth && currentLine !== '') {
+                        lines.push(currentLine);
+                        currentLine = word;
+                    } else {
+                        currentLine = testLine;
+                    }
+                });
+                if (currentLine) lines.push(currentLine);
+
+                const lineSpacing = fontSize * (1.7 - crowding * 0.35);
+
+                lines.forEach((lineText, lineIdx) => {
+                    if (curY + fontSize <= canvas.height - padding - 15) {
+                        drawLeftAlignedEnglishLine(lineText, textMarginLeft, curY, fontSize, time + (lineIdx + 2) * 6, missing, jitter, swap, crowding);
+                        curY += lineSpacing;
+                    }
+                });
+            } else {
+                const fontSize = Math.max(16, Math.min(24, canvas.width * 0.04));
+                const lineSpacing = fontSize * (1.85 - crowding * 0.35);
+                const rawLines = bodyText.split(/(?<=[。！？；,，])/).filter(line => line.trim().length > 0);
+
+                rawLines.forEach((line, lineIdx) => {
+                    if (curY + fontSize > canvas.height - padding - 15) return;
+                    drawCenteredTextLine(line.trim(), centerX, curY, fontSize, time + (lineIdx + 2) * 6, missing, jitter, swap, crowding);
+                    curY += lineSpacing;
+                });
+            }
+        }
+
+        function drawCenteredTextLine(text, centerX, y, fontSize, time, missing, jitter, swap, crowding) {
+            ctx.font = `700 ${fontSize}px 'Noto Serif TC', serif`;
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+
+            const charCount = text.length;
+            const baseSpacing = fontSize * (0.15 - crowding * 0.1);
+            const secondSeed = Math.floor(time / 1.0); 
+
+            const radicalMap = {
+                '床': ['廣', '木', 'vertical'], '前': ['剪', '刂', 'horizontal'], '明': ['日', '月', 'horizontal'], '光': ['⺌', '兀', 'vertical'],
+                '疑': ['匕', '矢', 'horizontal'], '是': ['日', '疋', 'vertical'], '地': ['土', '也', 'horizontal'], '上': ['卜', '一', 'vertical'],
+                '霜': ['雨', '相', 'vertical'], '舉': ['興', '手', 'vertical'], '頭': ['豆', '頁', 'horizontal'], '望': ['亡', '月', 'vertical'],
+                '低': ['亻', '氐', 'horizontal'], '思': ['田', '心', 'vertical'], '故': ['古', '攵', 'horizontal'], '鄉': ['鄉', '阝', 'horizontal'],
+                '春': ['三', '日', 'vertical'], '眠': ['目', '民', 'horizontal'], '曉': ['日', '堯', 'horizontal'], '處': ['虍', '夂', 'vertical'],
+                '聞': ['門', '耳', 'horizontal'], '啼': ['口', '帝', 'horizontal'], '鳥': ['烏', '一', 'vertical'], '夜': ['亠', '夜', 'vertical'],
+                '風': ['凡', '虫', 'horizontal'], '雨': ['一', '兩', 'vertical'], '聲': ['聲', '耳', 'horizontal'], '花': ['艹', '化', 'vertical'],
+                '落': ['艹', '洛', 'vertical'], '知': ['矢', '口', 'horizontal'], '多': ['夕', '夕', 'vertical'], '少': ['小', '丿', 'vertical'],
+                '黃': ['廿', '由', 'vertical'], '河': ['氵', '可', 'horizontal'], '流': ['氵', '充', 'horizontal'], '欲': ['谷', '欠', 'horizontal'],
+                '窮': ['穴', '躬', 'vertical'], '千': ['丿', '十', 'vertical'], '里': ['日', '土', 'vertical'], '更': ['一', '由', 'vertical'],
+                '層': ['尸', '曾', 'vertical'], '樓': ['木', '婁', 'horizontal'], '鸛': ['雚', '鳥', 'horizontal'], '雀': ['小', '隹', 'vertical'],
+                '紅': ['纟', '工', 'horizontal'], '豆': ['一', '豆', 'vertical'], '生': ['牛', '一', 'vertical'], '南': ['十', '羊', 'vertical'],
+                '國': ['囗', '或', 'horizontal'], '發': ['癶', '殳', 'vertical'], '枝': ['木', '支', 'horizontal'], '願': ['原', '頁', 'horizontal'],
+                '君': ['尹', '口', 'vertical'], '採': ['扌', '采', 'horizontal'], '擷': ['扌', '頡', 'horizontal'], '此': ['止', '匕', 'horizontal'],
+                '物': ['牜', '勿', 'horizontal'], '最': ['日', '取', 'vertical'],
+                '慈': ['茲', '心', 'vertical'], '母': ['∟', '∟', 'vertical'], '手': ['丿', '二', 'vertical'], '中': ['口', '丨', 'vertical'],
+                '線': ['纟', '泉', 'horizontal'], '遊': ['氵', '游', 'horizontal'], '子': ['了', '一', 'vertical'], '身': ['身', '丿', 'horizontal'],
+                '衣': ['亠', '𧘇', 'vertical'], '臨': ['臣', '品', 'horizontal'], '行': ['彳', '亍', 'horizontal'], '密': ['宀', '必', 'vertical'],
+                '縫': ['纟', '逢', 'horizontal'], '意': ['音', '心', 'vertical'], '恐': ['巩', '心', 'vertical'], '遲': ['辶', '犀', 'horizontal'],
+                '歸': ['𠂤', '彐', 'horizontal'], '誰': ['言', '隹', 'horizontal'], '言': ['亠', '口', 'vertical'], '寸': ['十', '丶', 'vertical'],
+                '草': ['艹', '早', 'vertical'], '心': ['丿', '乚', 'horizontal'], '報': ['幸', '卩', 'horizontal'], '得': ['彳', '尋', 'horizontal'],
+                '暉': ['日', '軍', 'horizontal'],
+                '靜': ['青', '爭', 'horizontal'], '李': ['木', '子', 'vertical'], '休': ['亻', '木', 'horizontal'], '好': ['女', '子', 'horizontal'],
+                '林': ['木', '木', 'horizontal'], '照': ['昭', '灬', 'vertical'], '想': ['相', '心', 'vertical'], '語': ['言', '吾', 'horizontal'],
+                '深': ['氵', '深', 'horizontal'], '仙': ['亻', '山', 'horizontal'], '龍': ['立', '月', 'horizontal'], '漁': ['氵', '魚', 'horizontal'],
+                '繽': ['纟', '賓', 'horizontal'], '紛': ['纟', '分', 'horizontal'], '綠': ['纟', '彔', 'horizontal'], '青': ['龶', '月', 'vertical'],
+                '預': ['予', '頁', 'horizontal'], '習': ['羽', '白', 'vertical'], '障': ['阝', '章', 'horizontal'], '礙': ['石', '疑', 'horizontal'],
+                '體': ['骨', '豊', 'horizontal'], '飄': ['票', '風', 'horizontal'], '浮': ['氵', '孚', 'horizontal'], '陋': ['阝', '丙', 'horizontal']
+            };
+
+            let estimatedTotalWidth = 0;
+            const charWidths = [];
+            const splitStates = [];
+
+            for (let i = 0; i < charCount; i++) {
+                const char = text[i];
+                const pseudoRandom = (Math.sin(secondSeed * 1000 + i * 37) + 1) / 2;
+                const isSwapTriggered = swap > 0 && (pseudoRandom < swap);
+                const missingRandom = (Math.sin(secondSeed * 800 + i * 53) + 1) / 2;
+                const isMissingTriggered = missing > 0 && (missingRandom < missing);
+
+                const hasRadical = !!radicalMap[char];
+                const isSplitNeeded = hasRadical && (isSwapTriggered || isMissingTriggered);
+
+                splitStates.push(isSplitNeeded);
+                const width = isSplitNeeded ? fontSize * 1.35 : (ctx.measureText(char).width + baseSpacing);
+                charWidths.push(width);
+                estimatedTotalWidth += width;
+            }
+
+            let startX = centerX - estimatedTotalWidth / 2;
+            const centerY = y + fontSize * 0.5;
+
+            for (let i = 0; i < charCount; i++) {
+                const char = text[i];
+                const isSplitNeeded = splitStates[i];
+                const w = charWidths[i];
+                let charX = startX + w / 2;
+                let charY = centerY;
+
+                if (jitter > 0) {
+                    charY += Math.sin(time + i * 1.5) * jitter * 8;
+                    charX += Math.cos(time * 0.8 + i) * jitter * 4;
+                }
+
+                const pseudoRandom = (Math.sin(secondSeed * 1000 + i * 37) + 1) / 2;
+                const isSwapTriggered = swap > 0 && (pseudoRandom < swap);
+                const missingRandom = (Math.sin(secondSeed * 800 + i * 53) + 1) / 2;
+                const isMissingTriggered = missing > 0 && (missingRandom < missing);
+                const styleRandom = (Math.cos(secondSeed * 500 + i * 19) + 1) / 2;
+
+                if (isSplitNeeded) {
+                    const [rad1, rad2, layoutType] = radicalMap[char];
+                    const sepDistance = fontSize * 0.38 * (swap > 0 ? Math.min(1.2, (swap / 0.4)) : 0.8);
+
+                    ctx.font = `700 ${fontSize * 0.82}px 'Noto Serif TC', serif`;
+
+                    const hideChoiceSeed = (Math.cos(secondSeed * 1200 + i * 67) + 1) / 2;
+                    const hideFirst = isMissingTriggered && (hideChoiceSeed < 0.5);
+                    const hideSecond = isMissingTriggered && (!hideFirst);
+
+                    if (layoutType === 'vertical') {
+                        const vertDistance = fontSize * 0.28;
+                        if (!hideFirst) {
                             ctx.save();
-                            // 第一部首
-                            if (!(isMissingHide && hideSide === 'p1')) {
-                                ctx.fillText(first, -fontSize * 0.25, 0);
-                            }
-                            // 第二部首
-                            if (!(isMissingHide && hideSide === 'p2')) {
-                                ctx.fillText(second, fontSize * 0.25, 0);
-                            }
+                            ctx.translate(charX, charY - vertDistance);
+                            if (isSwapTriggered && styleRandom < 0.5) ctx.scale(-1, 1);
+                            ctx.fillStyle = '#2C2621';
+                            ctx.fillText(rad1, 0, 0);
                             ctx.restore();
-                        } else {
+                        }
+                        if (!hideSecond) {
                             ctx.save();
-                            if (!(isMissingHide && hideSide === 'p1')) {
-                                ctx.fillText(first, 0, -fontSize * 0.25);
-                            }
-                            if (!(isMissingHide && hideSide === 'p2')) {
-                                ctx.fillText(second, 0, fontSize * 0.25);
-                            }
+                            ctx.translate(charX, charY + vertDistance);
+                            if (isSwapTriggered && styleRandom >= 0.5) ctx.scale(1, -1);
+                            ctx.fillStyle = '#2C2621';
+                            ctx.fillText(rad2, 0, 0);
                             ctx.restore();
                         }
                     } else {
-                        // 一般字元處理：若缺筆劃命中則徹底不渲染 (完全擦除)
-                        if (!isMissingHide) {
-                            ctx.fillText(char, (i - text.length / 2) * (fontSize * 0.6), 0);
-                        }
-                    }
-                }
-                ctx.restore();
-            });
-        }
-
-        // 範文與自訂文字通用 Overlay 渲染
-        function renderArticleOverlay(title, textContent) {
-            cancelAnimationFrame(animationFrameId);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // 卡片背景
-            ctx.fillStyle = '#FBF9F5';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            const missing = parseInt(paramMissing.value) / 100;
-            const jitter = parseInt(paramJitter.value) / 100;
-            const swap = parseInt(paramSwap.value) / 100;
-            const crowding = parseInt(paramCrowding.value) / 100;
-
-            const isEnglish = textContent.startsWith('English Story:');
-
-            ctx.save();
-
-            // 標題繪製
-            ctx.fillStyle = '#4A4036';
-            ctx.font = 'bold 22px "Zen Maru Gothic", sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(title, canvas.width / 2, 50);
-
-            // 內文排版與行距調整
-            const baseLineHeight = isEnglish ? 36 : 48;
-            const lineHeight = baseLineHeight * (1 - crowding * 0.4);
-            const startY = 110;
-            const fontSize = isEnglish ? 18 : 24;
-
-            const nowSec = Math.floor(Date.now() / 1000);
-
-            if (isEnglish) {
-                // 英文模式：按單字進行 Letter-Spacing / Word-Spacing 清晰對齊
-                const words = textContent.replace('English Story: ', '').split(' ');
-                let curX = 40;
-                let curY = startY;
-                const maxX = canvas.width - 40;
-
-                words.forEach((word) => {
-                    const wordWidth = word.length * (fontSize * 0.55);
-                    if (curX + wordWidth > maxX) {
-                        curX = 40;
-                        curY += lineHeight;
-                    }
-
-                    for (let i = 0; i < word.length; i++) {
-                        let ch = word[i];
-                        // 字母鏡像 (b/d, p/q)
-                        if (Math.random() < swap) {
-                            if (ch === 'b') ch = 'd';
-                            else if (ch === 'd') ch = 'b';
-                            else if (ch === 'p') ch = 'q';
-                            else if (ch === 'q') ch = 'p';
-                        }
-
-                        const isMissing = Math.random() < missing;
-
-                        if (!isMissing) {
+                        if (!hideFirst) {
                             ctx.save();
-                            let jx = 0, jy = 0;
-                            if (jitter > 0) {
-                                jx = Math.sin(Date.now() / 200 + curX) * (jitter * 8);
-                                jy = Math.cos(Date.now() / 200 + curY) * (jitter * 8);
-                            }
-                            ctx.font = `${fontSize}px sans-serif`;
-                            ctx.fillStyle = '#2C2523';
-                            ctx.fillText(ch, curX + jx, curY + jy);
+                            ctx.translate(charX - sepDistance, charY);
+                            if (isSwapTriggered && styleRandom < 0.5) ctx.scale(-1, 1);
+                            ctx.fillStyle = '#2C2621';
+                            ctx.fillText(rad1, 0, 0);
                             ctx.restore();
                         }
-                        curX += fontSize * 0.55;
-                    }
-                    // 單字間距
-                    curX += fontSize * 0.45;
-                });
-
-            } else {
-                // 中文模式：置中與結構拆拆處理
-                const lines = textContent.split('：');
-                const contentText = lines[1] || textContent;
-                const charArray = Array.from(contentText);
-
-                let curX = 60;
-                let curY = startY;
-                const maxX = canvas.width - 60;
-
-                charArray.forEach((char) => {
-                    if (curX > maxX || char === '。' || char === '，') {
-                        if (curX > maxX) {
-                            curX = 60;
-                            curY += lineHeight;
+                        if (!hideSecond) {
+                            ctx.save();
+                            ctx.translate(charX + sepDistance, charY);
+                            if (isSwapTriggered && styleRandom >= 0.5) ctx.scale(1, -1);
+                            ctx.fillStyle = '#2C2621';
+                            ctx.fillText(rad2, 0, 0);
+                            ctx.restore();
                         }
                     }
+                    ctx.font = `700 ${fontSize}px 'Noto Serif TC', serif`;
+                } else {
+                    if (!isMissingTriggered) {
+                        ctx.save();
+                        ctx.translate(charX, charY);
+                        if (isSwapTriggered) {
+                            if (styleRandom < 0.5) ctx.scale(-1, 1);
+                            else ctx.scale(1, -1);
+                        }
+                        ctx.fillStyle = '#2C2621';
+                        ctx.fillText(char, 0, 0);
+                        ctx.restore();
+                    }
+                }
+                startX += w;
+            }
+        }
 
-                    const decomp = decomposableChars[char];
-                    const isMissingHide = Math.random() < missing;
-                    const hideSide = (nowSec + char.charCodeAt(0)) % 2 === 0 ? 'p1' : 'p2';
+        function drawCenteredEnglishTitle(title, centerX, y, fontSize, time, missing, jitter, swap, crowding) {
+            ctx.font = `700 ${fontSize}px 'Zen Maru Gothic', sans-serif`;
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
 
-                    let jx = 0, jy = 0;
+            const metrics = ctx.measureText(title);
+            let startX = centerX - metrics.width / 2;
+            const secondSeed = Math.floor(time / 1.0);
+            const centerY = y + fontSize * 0.5;
+
+            for (let i = 0; i < title.length; i++) {
+                const char = title[i];
+                const charWidth = ctx.measureText(char).width;
+                let charX = startX + charWidth / 2;
+                let charY = centerY;
+
+                if (jitter > 0) {
+                    charY += Math.sin(time + i * 1.2) * jitter * 6;
+                }
+
+                ctx.save();
+                ctx.translate(charX, charY);
+
+                if (swap > 0) {
+                    const pseudoRandom = (Math.sin(secondSeed * 1000 + i * 43) + 1) / 2;
+                    if (pseudoRandom < swap) {
+                        const styleRandom = (Math.cos(secondSeed * 700 + i * 17) + 1) / 2;
+                        if (styleRandom < 0.5) ctx.scale(-1, 1);
+                        else ctx.scale(1, -1);
+                    }
+                }
+
+                ctx.fillStyle = '#2C2621';
+                ctx.globalAlpha = (missing > 0 && Math.random() < missing * 0.25) ? 0.3 : 1.0;
+                ctx.fillText(char, 0, 0);
+                ctx.restore();
+                startX += charWidth;
+            }
+        }
+
+        function drawLeftAlignedEnglishLine(text, startX, y, fontSize, time, missing, jitter, swap, crowding) {
+            ctx.font = `700 ${fontSize}px 'Zen Maru Gothic', sans-serif`;
+            ctx.textBaseline = 'middle';
+            ctx.textAlign = 'center';
+
+            const words = text.split(' ');
+            const wordGap = fontSize * 0.45;
+            let curX = startX;
+            const secondSeed = Math.floor(time / 1.0);
+            const centerY = y + fontSize * 0.5;
+            let globalCharIdx = 0;
+
+            words.forEach((word) => {
+                const wordWidth = ctx.measureText(word).width;
+                let charStartX = curX;
+
+                for (let i = 0; i < word.length; i++) {
+                    const char = word[i];
+                    const charWidth = ctx.measureText(char).width;
+                    let charX = charStartX + charWidth / 2;
+                    let charY = centerY;
+
                     if (jitter > 0) {
-                        jx = Math.sin(Date.now() / 200 + curX) * (jitter * 10);
-                        jy = Math.cos(Date.now() / 200 + curY) * (jitter * 10);
+                        charY += Math.sin(time + globalCharIdx * 0.8) * jitter * 5;
                     }
 
                     ctx.save();
-                    ctx.translate(curX + jx, curY + jy);
-                    ctx.font = `${fontSize}px "Noto Serif TC", serif`;
-                    ctx.fillStyle = '#2C2523';
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
+                    ctx.translate(charX, charY);
 
-                    if (decomp) {
-                        const isSwapped = Math.random() < swap;
-                        const first = isSwapped ? decomp.p2 : decomp.p1;
-                        const second = isSwapped ? decomp.p1 : decomp.p2;
-
-                        if (decomp.type === 'lr') {
-                            if (!(isMissingHide && hideSide === 'p1')) ctx.fillText(first, -fontSize * 0.25, 0);
-                            if (!(isMissingHide && hideSide === 'p2')) ctx.fillText(second, fontSize * 0.25, 0);
-                        } else {
-                            if (!(isMissingHide && hideSide === 'p1')) ctx.fillText(first, 0, -fontSize * 0.25);
-                            if (!(isMissingHide && hideSide === 'p2')) ctx.fillText(second, 0, fontSize * 0.25);
-                        }
-                    } else {
-                        if (!isMissingHide) {
-                            ctx.fillText(char, 0, 0);
+                    if (swap > 0) {
+                        const pseudoRandom = (Math.sin(secondSeed * 1000 + globalCharIdx * 29) + 1) / 2;
+                        if (pseudoRandom < swap) {
+                            const styleRandom = (Math.cos(secondSeed * 700 + globalCharIdx * 13) + 1) / 2;
+                            if (styleRandom < 0.5) ctx.scale(-1, 1);
+                            else ctx.scale(1, -1);
                         }
                     }
+
+                    const missingRandom = (Math.sin(secondSeed * 800 + globalCharIdx * 53) + 1) / 2;
+                    const isMissingTriggered = missing > 0 && (missingRandom < missing);
+
+                    if (!isMissingTriggered) {
+                        ctx.fillStyle = '#2C2621';
+                        ctx.fillText(char, 0, 0);
+                    }
                     ctx.restore();
-
-                    curX += fontSize * 1.4;
-                });
-            }
-
-            ctx.restore();
+                    charStartX += charWidth;
+                    globalCharIdx++;
+                }
+                curX += wordWidth + wordGap;
+            });
         }
 
-        // 滑桿事件重繪
-        [paramMissing, paramJitter, paramSwap, paramCrowding].forEach(input => {
-            input.oninput = () => {
-                valMissing.innerText = `${paramMissing.value}%`;
-                valJitter.innerText = `${paramJitter.value}%`;
-                valSwap.innerText = `${paramSwap.value}%`;
-                valCrowding.innerText = `${paramCrowding.value}%`;
+        function renderCustomTextOverlay(time, missing, jitter, swap, crowding) {
+            const rawInput = customTextInput.value.trim() || "國文預習第一課：床前明月光，疑是地上霜。";
+            renderArticleOverlay(rawInput, time, missing, jitter, swap, crowding);
+        }
 
-                if (currentMode === 'preset') {
-                    const sel = presetArticleSelect.value;
-                    const parts = sel.split('：');
-                    renderArticleOverlay(parts[0], parts[1] || sel);
-                } else if (currentMode === 'sandbox') {
-                    renderArticleOverlay("自訂文字體驗", customTextInput.value);
-                }
-            };
-        });
+        function renderOcrSpldOverlay(time, missing, jitter, swap, crowding) {
+            if (!ocrResults || ocrResults.length === 0) return;
 
-        // Tab 切換事件
+            ocrResults.forEach((wordObj, idx) => {
+                const { bbox, text } = wordObj;
+                if (!bbox || !text) return;
+
+                const width = bbox.x1 - bbox.x0;
+                const height = bbox.y1 - bbox.y0;
+                const fontPx = Math.max(16, height * 0.85);
+
+                const centerX = bbox.x0 + width / 2;
+                const centerY = bbox.y0 + height / 2;
+
+                drawCenteredTextLine(text, centerX, centerY - fontPx * 0.5, fontPx, time + idx * 5, missing, jitter, swap, crowding);
+            });
+        }
+
+        function setParamsValue(val) {
+            paramMissing.value = val;
+            paramJitter.value = val;
+            paramSwap.value = val;
+            paramCrowding.value = val;
+
+            valMissing.innerText = `${val}%`;
+            valJitter.innerText = `${val}%`;
+            valSwap.innerText = `${val}%`;
+            valCrowding.innerText = `${val}%`;
+        }
+
         tabModeOcr.onclick = () => {
             currentMode = 'ocr';
-            tabModeOcr.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-wood-700 text-washi transition shadow-sm text-[11px] sm:text-xs shrink-0';
-            tabModePreset.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark text-[11px] sm:text-xs shrink-0';
-            tabModeText.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark text-[11px] sm:text-xs shrink-0';
+            tabModeOcr.className = "px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-wood-700 text-washi transition shadow-sm text-[11px] sm:text-xs shrink-0";
+            tabModePreset.className = "px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark text-[11px] sm:text-xs shrink-0";
+            tabModeText.className = "px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark text-[11px] sm:text-xs shrink-0";
             
             presetArticleContainer.classList.add('hidden');
             customTextInputContainer.classList.add('hidden');
+            if (!currentStream) {
+                startOverlay.classList.remove('hidden');
+            } else {
+                camControlsBar.classList.remove('hidden');
+            }
 
-            paramMissing.value = 50; valMissing.innerText = '50%';
-            paramJitter.value = 0; valJitter.innerText = '0%';
-            paramSwap.value = 50; valSwap.innerText = '50%';
-            paramCrowding.value = 0; valCrowding.innerText = '0%';
-
-            startCamera();
+            setParamsValue(50);
+            resizeCanvas();
         };
 
         tabModePreset.onclick = () => {
             currentMode = 'preset';
-            tabModePreset.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-wood-700 text-washi transition shadow-sm text-[11px] sm:text-xs shrink-0';
-            tabModeOcr.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark text-[11px] sm:text-xs shrink-0';
-            tabModeText.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark text-[11px] sm:text-xs shrink-0';
-
+            tabModePreset.className = "px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-wood-700 text-washi transition shadow-sm text-[11px] sm:text-xs shrink-0";
+            tabModeOcr.className = "px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark text-[11px] sm:text-xs shrink-0";
+            tabModeText.className = "px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark text-[11px] sm:text-xs shrink-0";
+            
             presetArticleContainer.classList.remove('hidden');
             customTextInputContainer.classList.add('hidden');
+            startOverlay.classList.add('hidden');
+            camControlsBar.classList.add('hidden');
 
-            paramMissing.value = 0; valMissing.innerText = '0%';
-            paramJitter.value = 0; valJitter.innerText = '0%';
-            paramSwap.value = 0; valSwap.innerText = '0%';
-            paramCrowding.value = 0; valCrowding.innerText = '0%';
-
-            stopCamera();
-            const sel = presetArticleSelect.value;
-            const parts = sel.split('：');
-            renderArticleOverlay(parts[0], parts[1] || sel);
+            setParamsValue(50);
+            resizeCanvas();
         };
 
         tabModeText.onclick = () => {
             currentMode = 'sandbox';
-            tabModeText.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-wood-700 text-washi transition shadow-sm text-[11px] sm:text-xs shrink-0';
-            tabModeOcr.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark text-[11px] sm:text-xs shrink-0';
-            tabModePreset.className = 'px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark text-[11px] sm:text-xs shrink-0';
-
-            presetArticleContainer.classList.add('hidden');
+            tabModeText.className = "px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-wood-700 text-washi transition shadow-sm text-[11px] sm:text-xs shrink-0";
+            tabModeOcr.className = "px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark text-[11px] sm:text-xs shrink-0";
+            tabModePreset.className = "px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-washi text-wood-700 border border-stoneborder transition hover:bg-washidark text-[11px] sm:text-xs shrink-0";
+            
             customTextInputContainer.classList.remove('hidden');
+            presetArticleContainer.classList.add('hidden');
+            startOverlay.classList.add('hidden');
+            camControlsBar.classList.add('hidden');
 
-            paramMissing.value = 0; valMissing.innerText = '0%';
-            paramJitter.value = 0; valJitter.innerText = '0%';
-            paramSwap.value = 0; valSwap.innerText = '0%';
-            paramCrowding.value = 0; valCrowding.innerText = '0%';
-
-            stopCamera();
-            renderArticleOverlay("自訂文字體驗", customTextInput.value);
+            setParamsValue(50);
+            resizeCanvas();
         };
 
-        // 控制按鈕監聽
         startCamBtn.onclick = startCamera;
         stopCamBtn.onclick = stopCamera;
-
         switchCamBtn.onclick = () => {
-            facingMode = (facingMode === 'environment') ? 'user' : 'environment';
+            facingMode = facingMode === 'environment' ? 'user' : 'environment';
             startCamera();
         };
 
-        previewPresetBtn.onclick = () => {
-            const sel = presetArticleSelect.value;
-            const parts = sel.split('：');
-            renderArticleOverlay(parts[0], parts[1] || sel);
-        };
+        previewPresetBtn.onclick = () => tabModePreset.click();
+        previewCustomBtn.onclick = () => tabModeText.click();
 
-        previewCustomBtn.onclick = () => {
-            renderArticleOverlay("自訂文字體驗", customTextInput.value);
-        };
-
-        presetBtn1.onclick = () => {
-            customTextInput.value = "國文預習第一課：床前明月光，疑是地上霜。舉頭望明月，低頭思故鄉。";
-            renderArticleOverlay("自訂文字體驗", customTextInput.value);
-        };
-
-        presetBtn2.onclick = () => {
-            customTextInput.value = "English Story: The Little Blue Dog: Once upon a time, a playful little blue dog named Toby loved to run in the park.";
-            renderArticleOverlay("自訂文字體驗", customTextInput.value);
-        };
+        presetBtn1.onclick = () => customTextInput.value = "【高拆解率古詩】唐·李白《靜夜思》：床前明月光，疑是地上霜。舉頭望明月，低頭思故鄉。";
+        presetBtn2.onclick = () => customTextInput.value = "English Story: The Little Blue Dog: Once upon a time, a playful little blue dog named Toby loved to run in the green park with his friends.";
 
         toggleInfoBtn.onclick = () => infoModal.classList.remove('hidden');
         closeModalBtn.onclick = () => infoModal.classList.add('hidden');
 
-        // 初始化畫布
+        let isCollapsed = false;
+        collapseBtn.onclick = () => {
+            isCollapsed = !isCollapsed;
+            if (isCollapsed) {
+                presetArticleContainer.classList.add('hidden');
+                customTextInputContainer.classList.add('hidden');
+                collapseBtn.innerHTML = '<i class="fa-solid fa-chevron-up"></i> <span class="hidden sm:inline">展開選單</span>';
+            } else {
+                if (currentMode === 'preset') presetArticleContainer.classList.remove('hidden');
+                if (currentMode === 'sandbox') customTextInputContainer.classList.remove('hidden');
+                collapseBtn.innerHTML = '<i class="fa-solid fa-chevron-down"></i> <span class="hidden sm:inline">收折選單</span>';
+            }
+        };
+
+        // 拍攝對比圖邏輯
+        captureBtn.onclick = () => {
+            if (!video.videoWidth) return;
+
+            const origCanvas = document.createElement('canvas');
+            origCanvas.width = canvas.width;
+            origCanvas.height = canvas.height;
+            const origCtx = origCanvas.getContext('2d');
+            
+            const scale = Math.max(canvas.width / video.videoWidth, canvas.height / video.videoHeight);
+            const x = (canvas.width / 2) - (video.videoWidth / 2) * scale;
+            const y = (canvas.height / 2) - (video.videoHeight / 2) * scale;
+            origCtx.drawImage(video, x, y, video.videoWidth * scale, video.videoHeight * scale);
+            
+            compareOriginalImg.src = origCanvas.toDataURL('image/png');
+            compareSpldImg.src = canvas.toDataURL('image/png');
+
+            compareModal.classList.remove('hidden');
+        };
+
+        closeCompareBtn.onclick = () => compareModal.classList.add('hidden');
+        retakeBtn.onclick = () => compareModal.classList.add('hidden');
+
+        saveCompareBtn.onclick = () => {
+            const link = document.createElement('a');
+            link.download = `SpLD-Comparison-${Date.now()}.png`;
+            link.href = compareSpldImg.src;
+            link.click();
+        };
+
         window.onload = () => {
             resizeCanvas();
+            renderLoop();
         };
     </script>
 </body>
